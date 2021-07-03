@@ -1,0 +1,11 @@
+dist
+coverage
+node_modules
+
+*.html
+*.md
+*.scss
+.*
+
+package.json
+package-lock.json
