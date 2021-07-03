@@ -8,6 +8,7 @@ const commonConfig = merge([
     entry: ['./src'],
     output: {
       publicPath: '/',
+      assetModuleFilename: '[name][ext][query]',
     },
     resolve: {
       extensions: ['.js', '.jsx', '.json', '.css', '.scss'],
@@ -37,9 +38,6 @@ const productionConfig = merge([parts.eliminateUnusedCss()])
 
 const developmentConfig = merge([
   {
-    output: {
-      assetModuleFilename: '[name][ext][query]',
-    },
     devtool: 'source-map',
   },
 ])
