@@ -8,6 +8,8 @@ import s from './App.m.scss'
 const App = () => (
   <div className={cl(s.root)}>
     <HelloWorld />
+    <HelloWorld />
+    <HelloWorld />
   </div>
 )
 
