@@ -3,6 +3,7 @@ import React from 'react'
 import Home from 'pages/Home'
 import Faces from 'pages/Faces'
 import LoadCsv from 'pages/LoadCsv'
+import MouseFollower from 'pages/MouseFollower'
 import Page404 from 'pages/Page404'
 
 const routes = [
@@ -29,6 +30,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <LoadCsv />,
+  },
+  {
+    id: 4,
+    path: '/mouse-follower',
+    title: 'Mouse Follower',
+    isExact: true,
+    isNavItem: true,
+    render: () => <MouseFollower />,
   },
   {
     id: 0,
