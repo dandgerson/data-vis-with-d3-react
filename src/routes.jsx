@@ -2,6 +2,7 @@ import React from 'react'
 
 import Home from 'pages/Home'
 import Faces from 'pages/Faces'
+import LoadCsv from 'pages/LoadCsv'
 import Page404 from 'pages/Page404'
 
 const routes = [
@@ -20,6 +21,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <Faces />,
+  },
+  {
+    id: 3,
+    path: '/load-csv',
+    title: 'Load CSV Data',
+    isExact: true,
+    isNavItem: true,
+    render: () => <LoadCsv />,
   },
   {
     id: 0,

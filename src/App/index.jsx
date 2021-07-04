@@ -11,9 +11,11 @@ import s from './App.m.scss'
 const App = () => (
   <BrowserRouter>
     <div className={cl(s.root)}>
-      <Header />
+      <div className={s.header}>
+        <Header />
+      </div>
 
-      <div className={cl(s.layout)}>
+      <div className={cl(s.content)}>
         <Switch>
           {routes.map((route) => (
             <Route
@@ -26,7 +28,9 @@ const App = () => (
         </Switch>
       </div>
 
-      <Footer />
+      <div className={s.footer}>
+        <Footer />
+      </div>
     </div>
   </BrowserRouter>
 )
