@@ -7,7 +7,24 @@ import s from './App.m.scss'
 
 const App = () => (
   <div className={cl(s.root)}>
-    <Face width={600} height={600} strokeWidth={10} />
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-end',
+      }}
+    >
+      <Face width={600} height={600} />
+      <Face
+        width={300}
+        height={300}
+        options={{
+          mouth: {
+            turn: 0.95,
+            translateY: 300 * 0.35,
+          },
+        }}
+      />
+    </div>
   </div>
 )
 
