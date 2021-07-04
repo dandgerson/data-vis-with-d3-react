@@ -50,7 +50,6 @@ exports.extractCssModules = ({ options = {}, loaders = [] } = {}) => ({
         test: /\.m\.(sa|sc|c)ss$/i,
         use: [
           { loader: MiniCssExtractPlugin.loader, options },
-          { loader: 'css-modules-typescript-loader?modules' },
           {
             loader: 'css-loader',
             options: {
