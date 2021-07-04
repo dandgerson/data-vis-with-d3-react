@@ -1,15 +1,13 @@
 import React from 'react'
 import cl from 'clsx'
 
-import HelloWorld from 'components/HelloWorld'
+import Face from 'components/Face'
 
 import s from './App.m.scss'
 
 const App = () => (
   <div className={cl(s.root)}>
-    <HelloWorld />
-    <HelloWorld />
-    <HelloWorld />
+    <Face width={600} height={600} strokeWidth={10} />
   </div>
 )
 
