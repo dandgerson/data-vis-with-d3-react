@@ -20,7 +20,7 @@ const App = () => (
         options={{
           mouth: {
             turn: 0.95,
-            translateY: 300 * 0.35,
+            translateY: 0.35,
           },
         }}
       />

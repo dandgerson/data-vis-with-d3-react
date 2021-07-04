@@ -10,18 +10,18 @@ import s from './Face.m.scss'
 const Face = ({ width, height, options }) => {
   const c = merge(
     {
-      centerX: height * 0.5,
-      centerY: height * 0.5,
-      strokeWidth: height * 0.02,
+      centerX: 0.5,
+      centerY: 0.5,
+      strokeWidth: 0.02,
       eye: {
         r: height * 0.08,
-        offsetX: width * 0.22,
-        offsetY: height * 0.2,
+        offsetX: 0.22,
+        offsetY: 0.2,
         strokeWidth: 0,
       },
       mouth: {
-        r: height * 0.25,
-        width: height * 0.035,
+        r: 0.25,
+        width: 0.035,
         size: 0.1,
         turn: 0,
         translateX: 0,
@@ -32,33 +32,37 @@ const Face = ({ width, height, options }) => {
   )
 
   const mouthArc = arc()
-    .innerRadius(c.mouth.r)
-    .outerRadius(c.mouth.r + c.mouth.width)
+    .innerRadius(height * c.mouth.r)
+    .outerRadius(height * c.mouth.r + height * c.mouth.width)
     .startAngle(Math.PI * 0.5 + Math.PI * c.mouth.size - Math.PI * c.mouth.turn)
     .endAngle(Math.PI + Math.PI * 0.5 - Math.PI * c.mouth.size - Math.PI * c.mouth.turn)()
 
   return (
     <svg data-svg-face width={width} height={height} className={cl(s.root)}>
-      <g transform={`translate(${c.centerX},${c.centerY})`}>
-        <circle data-head r={c.centerY - c.strokeWidth * 0.5} strokeWidth={c.strokeWidth} />
+      <g transform={`translate(${c.centerX * width},${c.centerY * height})`}>
+        <circle
+          data-head
+          r={c.centerY * height - c.strokeWidth * height * 0.5}
+          strokeWidth={c.strokeWidth * height}
+        />
         <circle
           data-eye-left
           r={c.eye.r}
-          cx={-c.eye.offsetX}
-          cy={-c.eye.offsetY}
+          cx={-c.eye.offsetX * width}
+          cy={-c.eye.offsetY * height}
           strokeWidth={c.eye.strokeWidth}
         />
         <circle
           data-eye-right
           r={c.eye.r}
-          cx={c.eye.offsetX}
-          cy={-c.eye.offsetY}
-          strokeWidth={c.eye.strokeWidth}
+          cx={c.eye.offsetX * width}
+          cy={-c.eye.offsetY * height}
+          strokeWidth={c.eye.strokeWidth * height}
         />
 
         <path
           data-smile
-          transform={`translate(${c.mouth.translateX},${c.mouth.translateY})`}
+          transform={`translate(${width * c.mouth.translateX},${height * c.mouth.translateY})`}
           d={mouthArc}
         />
       </g>
