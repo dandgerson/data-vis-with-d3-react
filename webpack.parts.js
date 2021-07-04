@@ -31,7 +31,9 @@ exports.extractCss = ({ options = {}, loaders = [] } = {}) => ({
     rules: [
       {
         test: /\.(sa|sc|c)ss$/i,
-        use: [{ loader: MiniCssExtractPlugin.loader, options }, { loader: 'css-loader' }].concat(loaders),
+        use: [{ loader: MiniCssExtractPlugin.loader, options }, { loader: 'css-loader' }].concat(
+          loaders,
+        ),
         exclude: /\.m\.(sa|sc|c)ss$/i,
       },
     ],

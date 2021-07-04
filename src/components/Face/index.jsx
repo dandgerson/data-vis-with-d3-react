@@ -41,10 +41,26 @@ const Face = ({ width, height, options }) => {
     <svg data-svg-face width={width} height={height} className={cl(s.root)}>
       <g transform={`translate(${c.centerX},${c.centerY})`}>
         <circle data-head r={c.centerY - c.strokeWidth * 0.5} strokeWidth={c.strokeWidth} />
-        <circle data-eye-left r={c.eye.r} cx={-c.eye.offsetX} cy={-c.eye.offsetY} strokeWidth={c.eye.strokeWidth} />
-        <circle data-eye-right r={c.eye.r} cx={c.eye.offsetX} cy={-c.eye.offsetY} strokeWidth={c.eye.strokeWidth} />
+        <circle
+          data-eye-left
+          r={c.eye.r}
+          cx={-c.eye.offsetX}
+          cy={-c.eye.offsetY}
+          strokeWidth={c.eye.strokeWidth}
+        />
+        <circle
+          data-eye-right
+          r={c.eye.r}
+          cx={c.eye.offsetX}
+          cy={-c.eye.offsetY}
+          strokeWidth={c.eye.strokeWidth}
+        />
 
-        <path data-smile transform={`translate(${c.mouth.translateX},${c.mouth.translateY})`} d={mouthArc} />
+        <path
+          data-smile
+          transform={`translate(${c.mouth.translateX},${c.mouth.translateY})`}
+          d={mouthArc}
+        />
       </g>
     </svg>
   )
