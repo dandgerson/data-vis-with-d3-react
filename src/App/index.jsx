@@ -6,9 +6,7 @@ import HelloWorld from 'components/HelloWorld'
 import s from './App.m.scss'
 
 const App = () => (
-  <div
-    className={cl(s.root)}
-  >
+  <div className={cl(s.root)}>
     <HelloWorld />
   </div>
 )
