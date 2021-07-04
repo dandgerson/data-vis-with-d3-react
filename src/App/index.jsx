@@ -13,7 +13,15 @@ const App = () => (
         alignItems: 'flex-end',
       }}
     >
-      <Face width={600} height={600} />
+      <Face
+        width={600}
+        height={600}
+        options={{
+          mouth: {
+            turn: -0.05,
+          },
+        }}
+      />
       <Face
         width={300}
         height={300}
