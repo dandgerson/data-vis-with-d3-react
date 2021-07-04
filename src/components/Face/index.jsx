@@ -16,7 +16,8 @@ const Face = ({ width, height, options }) => {
           centerY: 0.5,
           strokeWidth: 0.02,
           eye: {
-            r: height * 0.08,
+            leftR: 0.08,
+            rightR: 0.08,
             offsetX: 0.22,
             offsetY: 0.2,
             strokeWidth: 0,
@@ -46,35 +47,37 @@ const Face = ({ width, height, options }) => {
   )
 
   return (
-    <svg data-svg-face width={width} height={height} className={cl(s.root)}>
-      <g transform={`translate(${c.centerX * width},${c.centerY * height})`}>
-        <circle
-          data-head
-          r={c.centerY * height - c.strokeWidth * height * 0.5}
-          strokeWidth={c.strokeWidth * height}
-        />
-        <circle
-          data-eye-left
-          r={c.eye.r}
-          cx={-c.eye.offsetX * width}
-          cy={-c.eye.offsetY * height}
-          strokeWidth={c.eye.strokeWidth}
-        />
-        <circle
-          data-eye-right
-          r={c.eye.r}
-          cx={c.eye.offsetX * width}
-          cy={-c.eye.offsetY * height}
-          strokeWidth={c.eye.strokeWidth * height}
-        />
+    <div className={cl(s.root)}>
+      <svg data-svg-face width={width} height={height} className={cl(s.root)}>
+        <g transform={`translate(${c.centerX * width},${c.centerY * height})`}>
+          <circle
+            data-head
+            r={c.centerY * height - c.strokeWidth * height * 0.5}
+            strokeWidth={c.strokeWidth * height}
+          />
+          <circle
+            data-eye-left
+            r={height * c.eye.leftR}
+            cx={-c.eye.offsetX * width}
+            cy={-c.eye.offsetY * height}
+            strokeWidth={c.eye.strokeWidth}
+          />
+          <circle
+            data-eye-right
+            r={height * c.eye.rightR}
+            cx={c.eye.offsetX * width}
+            cy={-c.eye.offsetY * height}
+            strokeWidth={c.eye.strokeWidth * height}
+          />
 
-        <path
-          data-smile
-          transform={`translate(${width * c.mouth.translateX},${height * c.mouth.translateY})`}
-          d={mouthArc}
-        />
-      </g>
-    </svg>
+          <path
+            data-mouth
+            transform={`translate(${width * c.mouth.translateX},${height * c.mouth.translateY})`}
+            d={mouthArc}
+          />
+        </g>
+      </svg>
+    </div>
   )
 }
 
