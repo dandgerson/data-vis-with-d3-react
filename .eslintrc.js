@@ -30,6 +30,9 @@ module.exports = {
   rules: {
     ...disableA11y(),
     semi: [2, 'never'],
+    'jsx-quotes': [2, 'prefer-single'],
+    'react/forbid-prop-types': 'off',
+    'arrow-parens': [2, 'as-needed'],
   },
   settings: {
     'import/resolver': {
