@@ -6,13 +6,7 @@ const useCsv = (url) => {
   initial.columns = []
 
   const [data, setData] = useState(initial)
-  useEffect(() => {
-    ;(async () => {
-      const parsedCsv = await csv(url)
-
-      setData(parsedCsv)
-    })()
-  }, [url])
+  useEffect(() => csv(url).then(setData), [url])
 
   return [
     data,
