@@ -4,6 +4,8 @@ import Home from 'pages/Home'
 import Faces from 'pages/Faces'
 import LoadCsv from 'pages/LoadCsv'
 import MouseFollower from 'pages/MouseFollower'
+import ParseCsv from 'pages/ParseCsv'
+
 import Page404 from 'pages/Page404'
 
 const routes = [
@@ -38,6 +40,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <MouseFollower />,
+  },
+  {
+    id: 5,
+    path: '/parse-csv-data-with-d3',
+    title: 'Parse CSV Data with D3',
+    isExact: true,
+    isNavItem: true,
+    render: () => <ParseCsv />,
   },
   {
     id: 0,
