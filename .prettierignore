@@ -5,6 +5,7 @@ node_modules
 *.html
 *.md
 *.scss
+*.css
 .*
 
 package.json
