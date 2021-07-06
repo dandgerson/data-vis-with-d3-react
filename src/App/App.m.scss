@@ -8,15 +8,19 @@
 }
 
 .header {
+  width: 100%;
+  padding: 0 32px;
 }
 
 .content {
   flex: 1 0 auto;
   width: 100%;
   overflow-y: auto;
-
-  outline: 1px solid palegreen;
 }
 
 .footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 32px;
 }

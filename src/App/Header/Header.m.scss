@@ -1,17 +1,13 @@
 .root {
-  // flex-shrink: 0;
   display: flex;
   justify-content: center;
 
   width: 100%;
-
-  outline: 1px solid red;
 }
 
-.navItem {
-  padding: 16px;
-
-  &-active {
-    border-bottom: 1px solid greenyellow;
-  }
+.nav {
+  flex: 1 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

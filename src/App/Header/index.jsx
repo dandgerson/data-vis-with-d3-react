@@ -1,25 +1,18 @@
 import React from 'react'
-import cl from 'clsx'
-import { NavLink } from 'react-router-dom'
 
-import routes from 'routes'
+import Nav from './Nav'
 
 import s from './Header.m.scss'
 
 const Header = () => (
   <div className={s.root}>
-    {routes
-      .filter((route) => route.isNavItem)
-      .map((navItem) => (
-        <NavLink
-          key={navItem.id}
-          className={cl(s.navItem)}
-          activeClassName={cl(s['navItem-active'])}
-          to={navItem.path}
-        >
-          {navItem.title}
-        </NavLink>
-      ))}
+    <div className={s.logo}>
+      <h1>Data Visualization with D3 and React</h1>
+    </div>
+
+    <div className={s.nav}>
+      <Nav />
+    </div>
   </div>
 )
 

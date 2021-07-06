@@ -15,7 +15,7 @@ const Faces = () => (
         gap: '5px',
       }}
     >
-      {Array.from({ length: 10 * 18 }, (_, i) => (
+      {Array.from({ length: 9 * 18 }, (_, i) => (
         <Face
           key={i}
           width={100}

@@ -8,7 +8,7 @@ const ParseCsv = () => {
 
   return (
     <div data-parse-csv-root>
-      <h1>Parse CSV Data with D3</h1>
+      <h2>Parse CSV Data with D3</h2>
       {data.length > 0 && (
         <>
           <div>CSV loaded with this meta:</div>
