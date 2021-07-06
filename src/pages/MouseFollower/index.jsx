@@ -6,7 +6,7 @@ const MouseFollower = () => {
   const r = 0.035
 
   const [[posX, posY], setPos] = useState([width / 2, height / 2])
-  const handleMouseMove = useCallback((e) => {
+  const handleMouseMove = useCallback(e => {
     const { top, left } = document
       .querySelector('[data-mouse-follower-svg]')
       .getBoundingClientRect()
@@ -35,7 +35,7 @@ const MouseFollower = () => {
         }}
         onMouseMove={handleMouseMove}
       >
-        <circle cx={posX} cy={posY} r={height * r} fill="aqua" />
+        <circle cx={posX} cy={posY} r={height * r} fill='aqua' />
       </svg>
     </div>
   )

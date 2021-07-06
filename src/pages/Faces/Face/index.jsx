@@ -9,40 +9,38 @@ import s from './Face.m.scss'
 
 const Face = ({ width, height, options }) => {
   const c = useMemo(
-    () =>
-      merge(
-        {
-          centerX: 0.5,
-          centerY: 0.5,
-          strokeWidth: 0.02,
-          eye: {
-            leftR: 0.08,
-            rightR: 0.08,
-            offsetX: 0.22,
-            offsetY: 0.2,
-            strokeWidth: 0,
-          },
-          mouth: {
-            r: 0.25,
-            width: 0.035,
-            size: 0.1,
-            turn: 0,
-            translateX: 0,
-            translateY: 0,
-          },
+    () => merge(
+      {
+        centerX: 0.5,
+        centerY: 0.5,
+        strokeWidth: 0.02,
+        eye: {
+          leftR: 0.08,
+          rightR: 0.08,
+          offsetX: 0.22,
+          offsetY: 0.2,
+          strokeWidth: 0,
         },
-        options,
-      ),
+        mouth: {
+          r: 0.25,
+          width: 0.035,
+          size: 0.1,
+          turn: 0,
+          translateX: 0,
+          translateY: 0,
+        },
+      },
+      options,
+    ),
     [],
   )
 
   const mouthArc = useMemo(
-    () =>
-      arc()
-        .innerRadius(height * c.mouth.r)
-        .outerRadius(height * c.mouth.r + height * c.mouth.width)
-        .startAngle(Math.PI * 0.5 + Math.PI * c.mouth.size - Math.PI * c.mouth.turn)
-        .endAngle(Math.PI + Math.PI * 0.5 - Math.PI * c.mouth.size - Math.PI * c.mouth.turn)(),
+    () => arc()
+      .innerRadius(height * c.mouth.r)
+      .outerRadius(height * c.mouth.r + height * c.mouth.width)
+      .startAngle(Math.PI * 0.5 + Math.PI * c.mouth.size - Math.PI * c.mouth.turn)
+      .endAngle(Math.PI + Math.PI * 0.5 - Math.PI * c.mouth.size - Math.PI * c.mouth.turn)(),
     [],
   )
 

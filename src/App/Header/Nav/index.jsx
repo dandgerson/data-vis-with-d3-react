@@ -9,8 +9,8 @@ import s from './Nav.m.scss'
 const Nav = () => (
   <div className={s.root}>
     {routes
-      .filter((route) => route.isNavItem)
-      .map((navItem) => (
+      .filter(route => route.isNavItem)
+      .map(navItem => (
         <NavLink
           key={navItem.id}
           className={cl(s.navItem)}

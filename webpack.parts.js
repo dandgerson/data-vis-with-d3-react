@@ -93,7 +93,7 @@ exports.eliminateUnusedCss = () => ({
       paths: allFiles,
       extractors: [
         {
-          extractor: (content) => content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [],
+          extractor: content => content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [],
           extensions: ['html'],
         },
       ],

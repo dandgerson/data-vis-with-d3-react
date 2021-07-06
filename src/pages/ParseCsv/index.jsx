@@ -12,9 +12,20 @@ const ParseCsv = () => {
       {data.length > 0 && (
         <>
           <div>CSV loaded with this meta:</div>
-          <div>size: {meta.kB} kB</div>
-          <div>rows: {meta.rows}</div>
-          <div>columns: {meta.columns}</div>
+          <div>
+            size:
+            {meta.kB}
+            {' '}
+            kB
+          </div>
+          <div>
+            rows:
+            {meta.rows}
+          </div>
+          <div>
+            columns:
+            {meta.columns}
+          </div>
         </>
       )}
     </div>

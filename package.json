@@ -11,7 +11,7 @@
     "start": "webpack serve --mode development --env test=test --color",
     "watch": "nodemon --watch webpack.*.js --exec \"npm run dev\"",
     "clear": "rm -rf dist",
-    "eslint": "eslint src --no-error-on-unmatched-pattern --fix",
+    "eslint": "eslint --ext .js,.jsx . --fix",
     "prettier": "prettier --write .",
     "prepare": "husky install"
   },

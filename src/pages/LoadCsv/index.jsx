@@ -4,10 +4,9 @@ const LoadCSV = () => {
   const [data, setData] = useState('')
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       try {
-        const url =
-          'https://gist.githubusercontent.com/dandgerson/e0c9835bc1a0de2bc13d40160d8e6a6d/raw/CSSNamedColors.csv'
+        const url = 'https://gist.githubusercontent.com/dandgerson/e0c9835bc1a0de2bc13d40160d8e6a6d/raw/CSSNamedColors.csv'
         const response = await fetch(url)
         const text = await response.text()
 

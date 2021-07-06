@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { csv, csvFormat } from 'd3'
 
-const useCsv = (url) => {
+const useCsv = url => {
   const initial = []
   initial.columns = []
 
