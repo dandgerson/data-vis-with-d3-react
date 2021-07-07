@@ -13,7 +13,7 @@ const useCsv = url => {
     {
       kB: csvFormat(data).length / 1024,
       rows: data.length,
-      columns: data.columns.length,
+      columns: data.columns,
     },
   ]
 }
