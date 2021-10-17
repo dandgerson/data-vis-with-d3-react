@@ -18,12 +18,7 @@ const App = () => (
       <div className={cl(s.content)}>
         <Switch>
           {routes.map(route => (
-            <Route
-              key={route.id}
-              exact={route.isExact}
-              path={route.path}
-              render={() => route.render()}
-            />
+            <Route key={route.id} exact={route.isExact} path={route.path} render={route.render} />
           ))}
         </Switch>
       </div>

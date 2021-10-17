@@ -2,18 +2,18 @@ import { useEffect, useState } from 'react'
 import { csv, csvFormat } from 'd3'
 
 const useCsv = url => {
-  const initial = []
-  initial.columns = []
+  const initialCsv = []
+  initialCsv.columns = []
 
-  const [data, setData] = useState(initial)
-  useEffect(() => csv(url).then(setData), [url])
+  const [csvData, setCsvData] = useState(initialCsv)
+  useEffect(() => csv(url).then(setCsvData), [url])
 
   return [
-    data,
+    csvData,
     {
-      kB: csvFormat(data).length / 1024,
-      rows: data.length,
-      columns: data.columns,
+      kB: csvFormat(csvData).length / 1024,
+      rows: csvData.length,
+      columns: csvData.columns,
     },
   ]
 }

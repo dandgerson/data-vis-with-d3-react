@@ -48,11 +48,12 @@ const VegaLiteApi = () => {
       attributes: Object.keys(data[0]),
     });
     (async () => {
-      const root = document.querySelector('[data-vega-lite-api-root]')
-      const { width: w, height: h } = root.getBoundingClientRect()
       const background = 'rgba(255, 255, 255, 0.1)'
       const guideLabel = 'rgba(255, 255, 255, 0.25)'
       const guideTitle = 'rgba(255, 255, 255, 0.5)'
+
+      const root = document.querySelector('[data-vega-lite-api-root]')
+      const { width: w, height: h } = root.getBoundingClientRect()
 
       const marks = viz
         .data(data.filter(item => ['India'].includes(item.Country_Region)).slice(1))
