@@ -1,0 +1,22 @@
+@import 'styles/variables.scss';
+
+.root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.navItem {
+  color: rgb(224, 226, 229);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+
+  transition: border-color $transition-props, color $transition-props;
+
+  &-active {
+    color: rgb(127, 171, 247);
+    border-color: rgb(127, 171, 247);
+  }
+}

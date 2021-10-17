@@ -47,7 +47,7 @@ const developmentConfig = merge([
  *
  * const mode = process.argv[process.argv.indexOf('--mode') + 1]
  */
-const getConfig = (mode) => {
+const getConfig = mode => {
   switch (mode) {
     case 'production':
       return merge(commonConfig, productionConfig, { mode })

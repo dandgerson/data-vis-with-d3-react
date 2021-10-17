@@ -5,6 +5,7 @@ import Faces from 'pages/Faces'
 import LoadCsv from 'pages/LoadCsv'
 import MouseFollower from 'pages/MouseFollower'
 import ParseCsv from 'pages/ParseCsv'
+import VegaLiteApi from 'pages/VegaLiteApi'
 
 import Page404 from 'pages/Page404'
 
@@ -48,6 +49,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <ParseCsv />,
+  },
+  {
+    id: 6,
+    path: '/vega-lite-api',
+    title: 'Vega Lite API',
+    isExact: true,
+    isNavItem: true,
+    render: () => <VegaLiteApi />,
   },
   {
     id: 0,

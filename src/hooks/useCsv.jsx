@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { csv, csvFormat } from 'd3'
 
-const useCsv = (url) => {
+const useCsv = url => {
   const initial = []
   initial.columns = []
 
@@ -13,7 +13,7 @@ const useCsv = (url) => {
     {
       kB: csvFormat(data).length / 1024,
       rows: data.length,
-      columns: data.columns.length,
+      columns: data.columns,
     },
   ]
 }

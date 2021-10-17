@@ -11,7 +11,7 @@
     "start": "webpack serve --mode development --env test=test --color",
     "watch": "nodemon --watch webpack.*.js --exec \"npm run dev\"",
     "clear": "rm -rf dist",
-    "eslint": "eslint src --no-error-on-unmatched-pattern --fix",
+    "eslint": "eslint --ext .js,.jsx . --fix",
     "prettier": "prettier --write .",
     "prepare": "husky install"
   },
@@ -25,7 +25,11 @@
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "vega": "^5.20.2",
+    "vega-lite": "^5.1.0",
+    "vega-lite-api": "^5.0.0",
+    "vega-tooltip": "^0.26.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",

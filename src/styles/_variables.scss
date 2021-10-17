@@ -1,0 +1,9 @@
+$color-accent: #7fabf7;
+$color-accent-50: rgba($color-accent, 0.5);
+
+$transition-props: 100ms linear;
+
+:export {
+  colorAccent: $color-accent;
+  colorAccent50: $color-accent-50;
+}

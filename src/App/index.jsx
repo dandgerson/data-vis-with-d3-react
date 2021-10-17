@@ -17,7 +17,7 @@ const App = () => (
 
       <div className={cl(s.content)}>
         <Switch>
-          {routes.map((route) => (
+          {routes.map(route => (
             <Route
               key={route.id}
               exact={route.isExact}
