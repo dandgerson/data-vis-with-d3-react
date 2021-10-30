@@ -1,15 +1,19 @@
 import React, { useState, useCallback } from 'react'
 
 const MouseFollower = () => {
-  const width = 900
-  const height = 900
-  const r = 0.035
+  const c = {
+    width: 900,
+    height: 900,
+    r: 0.035,
+  }
 
-  const [[posX, posY], setPos] = useState([width / 2, height / 2])
+  const [[posX, posY], setPos] = useState([c.width / 2, c.height / 2])
+
   const handleMouseMove = useCallback(e => {
     const { top, left } = document
       .querySelector('[data-mouse-follower-svg]')
       .getBoundingClientRect()
+
     setPos([e.clientX - left, e.clientY - top])
   }, [])
 
@@ -28,14 +32,14 @@ const MouseFollower = () => {
       <div>Mouse Follower</div>
       <svg
         data-mouse-follower-svg
-        width={width}
-        height={height}
+        width={c.width}
+        height={c.height}
         style={{
           outline: '1px solid',
         }}
         onMouseMove={handleMouseMove}
       >
-        <circle cx={posX} cy={posY} r={height * r} fill='aqua' />
+        <circle cx={posX} cy={posY} r={c.height * c.r} fill='aqua' />
       </svg>
     </div>
   )
