@@ -4,6 +4,8 @@
   justify-content: center;
   align-items: center;
 
+  overflow: hidden;
+
   height: 100%;
 }
 
@@ -13,10 +15,9 @@
 }
 
 .content {
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 auto;
+  flex: 1;
   width: 100%;
+  overflow: hidden;
   overflow-y: auto;
 }
 
