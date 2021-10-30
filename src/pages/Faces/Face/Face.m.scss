@@ -1,15 +1,14 @@
 .root {
-  [data-head] {
+  .head {
     stroke: rgb(231, 231, 231);
     fill: rgba(83, 167, 209, 0.5);
   }
 
-  [data-eye-left],
-  [data-eye-right] {
+  .eye {
     fill: rgba(27, 27, 29, 0.85);
   }
 
-  [data-mouth] {
+  .mouth {
     fill: rgba(27, 27, 29, 0.85);
   }
 }

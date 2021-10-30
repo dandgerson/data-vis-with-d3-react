@@ -50,11 +50,13 @@ const Face = ({ width, height, options }) => {
         <g transform={`translate(${c.centerX * width},${c.centerY * height})`}>
           <circle
             data-head
+            className={s.head}
             r={c.centerY * height - c.strokeWidth * height * 0.5}
             strokeWidth={c.strokeWidth * height}
           />
           <circle
             data-eye-left
+            className={s.eye}
             r={height * c.eye.leftR}
             cx={-c.eye.offsetX * width}
             cy={-c.eye.offsetY * height}
@@ -62,6 +64,7 @@ const Face = ({ width, height, options }) => {
           />
           <circle
             data-eye-right
+            className={s.eye}
             r={height * c.eye.rightR}
             cx={c.eye.offsetX * width}
             cy={-c.eye.offsetY * height}
@@ -70,6 +73,7 @@ const Face = ({ width, height, options }) => {
 
           <path
             data-mouth
+            className={s.mouth}
             transform={`translate(${width * c.mouth.translateX},${height * c.mouth.translateY})`}
             d={mouthArc}
           />
