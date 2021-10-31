@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { csv, csvFormat } from 'd3'
 
-const useCsv = url => {
+const useCsv = (url, convertRow) => {
   const initialCsv = []
   initialCsv.columns = []
 
   const [csvData, setCsvData] = useState(initialCsv)
-  useEffect(() => csv(url).then(setCsvData), [url])
+  useEffect(() => csv(url, convertRow).then(setCsvData), [url])
 
   return [
     csvData,

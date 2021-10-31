@@ -1,17 +1,23 @@
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
-import { arc, pie } from 'd3'
+import { scaleBand, scaleLinear } from 'd3'
 
 // import s from './BarChart.m.scss'
 
 const BarChart = () => {
   const [data] = useCsv(
-    'https://gist.githubusercontent.com/dandgerson/e0c9835bc1a0de2bc13d40160d8e6a6d/raw/CSSNamedColors.csv',
+    'https://gist.githubusercontent.com/dandgerson/74072e8d929f78691f52b3bc2088771a/raw/worldPopulation2021.cvs',
+    d => ({
+      ...d,
+      population: Number.parseFloat(d['2020']),
+    }),
   )
 
   console.log({
     data,
   })
+
+  const processedData = useMemo(() => data.slice(0, 10), [data])
 
   const svgContainerProps = useMemo(() => {
     const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
@@ -20,13 +26,18 @@ const BarChart = () => {
       width: svgRect?.width || 0,
       height: svgRect?.height || 0,
     }
-  }, [data])
+  }, [processedData])
 
-  const pieArc = useMemo(
-    () => arc()
-      .innerRadius(0)
-      .outerRadius(svgContainerProps.height / 2),
-    [data],
+  const d3Props = useMemo(
+    () => ({
+      yScale: scaleBand()
+        .domain(processedData.map(d => d.Country))
+        .range([0, svgContainerProps.height]),
+      xScale: scaleLinear()
+        .domain([0, Math.max(...processedData.map(d => d.population))])
+        .range([0, svgContainerProps.width]),
+    }),
+    [processedData],
   )
 
   return (
@@ -38,15 +49,12 @@ const BarChart = () => {
     >
       <div
         style={{
-          maxWidth: '20%',
+          width: '20%',
         }}
       >
-        <h2>Loading Data with React</h2>
+        <h2>Bar Chart</h2>
 
-        <p>
-          A program that loads in some data about CSS named colors, using D3 utilities, and React
-          stated to keep track of the data as a radial burst.
-        </p>
+        <p>Making a Bar Chart with React and D3.</p>
       </div>
 
       <div className='separator-v'>
@@ -65,23 +73,16 @@ const BarChart = () => {
             height: '100%',
           }}
         >
-          <g
-            transform={`translate(${svgContainerProps.width / 2},${svgContainerProps.height / 2})`}
-          >
-            {data.length > 0
-              ? pie()
-                .value(1)(data)
-                .map((d, i) => (
-                  <path
-                    key={i}
-                    style={{
-                      fill: d.data.Keyword,
-                    }}
-                    d={pieArc(d)}
-                  />
-                ))
-              : null}
-          </g>
+          {processedData.map(d => (
+            <rect
+              key={d.Country}
+              x={0}
+              y={d3Props.yScale(d.Country)}
+              width={d3Props.xScale(d.population)}
+              height={d3Props.yScale.bandwidth()}
+              stroke='white'
+            />
+          ))}
         </svg>
       </div>
     </div>
