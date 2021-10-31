@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
+import { arc, pie } from 'd3'
 
 import s from './LoadingDataWithReact.m.scss'
 
@@ -12,10 +13,27 @@ const LoadingDataWithReact = () => {
     data,
   })
 
+  const svgContainerProps = useMemo(() => {
+    const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
+
+    return {
+      width: svgRect?.width || 0,
+      height: svgRect?.height || 0,
+    }
+  }, [data])
+
+  const pieArc = useMemo(
+    () => arc()
+      .innerRadius(0)
+      .outerRadius(svgContainerProps.height / 2),
+    [data],
+  )
+
   return (
     <div
       style={{
         display: 'flex',
+        height: '100%',
       }}
     >
       <div
@@ -27,7 +45,7 @@ const LoadingDataWithReact = () => {
 
         <p>
           A program that loads in some data about CSS named colors, using D3 utilities, and React
-          stated to keep track of the data.
+          stated to keep track of the data as a radial burst.
         </p>
       </div>
 
@@ -40,17 +58,31 @@ const LoadingDataWithReact = () => {
           flex: 1,
         }}
       >
-        {data.length > 0
-          ? data.map((d, i) => (
-            <div
-              key={i}
-              style={{
-                backgroundColor: d.Keyword,
-                height: 10,
-              }}
-            />
-          ))
-          : null}
+        <svg
+          data-svg-container
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          <g
+            transform={`translate(${svgContainerProps.width / 2},${svgContainerProps.height / 2})`}
+          >
+            {data.length > 0
+              ? pie()
+                .value(1)(data)
+                .map((d, i) => (
+                  <path
+                    key={i}
+                    style={{
+                      fill: d.data.Keyword,
+                    }}
+                    d={pieArc(d)}
+                  />
+                ))
+              : null}
+          </g>
+        </svg>
       </div>
     </div>
   )
