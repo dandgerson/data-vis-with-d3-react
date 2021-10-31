@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
 import { arc, pie } from 'd3'
 
-import s from './BarChart.m.scss'
+// import s from './BarChart.m.scss'
 
 const BarChart = () => {
   const [data] = useCsv(
@@ -49,7 +49,7 @@ const BarChart = () => {
         </p>
       </div>
 
-      <div className={s['separator-v']}>
+      <div className='separator-v'>
         <div />
       </div>
 

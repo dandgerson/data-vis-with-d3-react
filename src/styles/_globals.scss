@@ -22,3 +22,15 @@ body {
 h2 {
   font-size: 1.5em;
 }
+
+.separator {
+  &-v {
+    padding: 0 6px;
+
+    div {
+      height: 100%;
+      width: 2px;
+      background-color: rgba($color-accent, 1);
+    }
+  }
+}

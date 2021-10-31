@@ -49,7 +49,7 @@ const LoadingDataWithReact = () => {
         </p>
       </div>
 
-      <div className={s['separator-v']}>
+      <div className='separator-v'>
         <div />
       </div>
 
