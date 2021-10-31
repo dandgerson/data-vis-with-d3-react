@@ -5,6 +5,7 @@ import Faces from 'pages/Faces'
 import LoadCsv from 'pages/LoadCsv'
 import MouseFollower from 'pages/MouseFollower'
 import ParseCsv from 'pages/ParseCsv'
+import LoadingDataWithReact from 'pages/LoadingDataWithReact'
 import VegaLiteApi from 'pages/VegaLiteApi'
 
 import Page404 from 'pages/Page404'
@@ -57,6 +58,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <VegaLiteApi />,
+  },
+  {
+    id: 7,
+    path: '/loading-data-with-react',
+    title: 'Loading Data with React',
+    isExact: true,
+    isNavItem: true,
+    render: () => <LoadingDataWithReact />,
   },
   {
     id: 0,

@@ -32,6 +32,7 @@ module.exports = {
     semi: [2, 'never'],
     'jsx-quotes': [2, 'prefer-single'],
     'react/forbid-prop-types': 'off',
+    'react/no-array-index-key': 'off',
     'arrow-parens': [2, 'as-needed'],
   },
   settings: {
