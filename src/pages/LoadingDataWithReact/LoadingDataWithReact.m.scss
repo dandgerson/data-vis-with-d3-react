@@ -11,3 +11,13 @@
     }
   }
 }
+
+.rotate {
+  animation: rotate 360s linear infinite;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

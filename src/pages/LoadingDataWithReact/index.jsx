@@ -73,6 +73,7 @@ const LoadingDataWithReact = () => {
                 .value(1)(data)
                 .map((d, i) => (
                   <path
+                    className={s.rotate}
                     key={i}
                     style={{
                       fill: d.data.Keyword,
