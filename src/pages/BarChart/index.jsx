@@ -28,14 +28,23 @@ const BarChart = () => {
     }
   }, [processedData])
 
+  const c = {
+    margin: {
+      top: 20,
+      right: 20,
+      bottom: 20,
+      left: 20,
+    },
+  }
+
   const d3Props = useMemo(
     () => ({
       yScale: scaleBand()
         .domain(processedData.map(d => d.Country))
-        .range([0, svgContainerProps.height]),
+        .range([0, svgContainerProps.height - (c.margin.top + c.margin.bottom)]),
       xScale: scaleLinear()
         .domain([0, Math.max(...processedData.map(d => d.population))])
-        .range([0, svgContainerProps.width]),
+        .range([0, svgContainerProps.width - (c.margin.left + c.margin.right)]),
     }),
     [processedData],
   )
@@ -73,16 +82,18 @@ const BarChart = () => {
             height: '100%',
           }}
         >
-          {processedData.map(d => (
-            <rect
-              key={d.Country}
-              x={0}
-              y={d3Props.yScale(d.Country)}
-              width={d3Props.xScale(d.population)}
-              height={d3Props.yScale.bandwidth()}
-              stroke='white'
-            />
-          ))}
+          <g transform={`translate(${c.margin.left},${c.margin.top})`}>
+            {processedData.map(d => (
+              <rect
+                key={d.Country}
+                x={0}
+                y={d3Props.yScale(d.Country)}
+                width={d3Props.xScale(d.population)}
+                height={d3Props.yScale.bandwidth()}
+                stroke='white'
+              />
+            ))}
+          </g>
         </svg>
       </div>
     </div>
