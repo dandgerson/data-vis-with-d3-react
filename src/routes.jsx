@@ -7,6 +7,7 @@ import MouseFollower from 'pages/MouseFollower'
 import ParseCsv from 'pages/ParseCsv'
 import LoadingDataWithReact from 'pages/LoadingDataWithReact'
 import VegaLiteApi from 'pages/VegaLiteApi'
+import BarChart from 'pages/BarChart'
 
 import Page404 from 'pages/Page404'
 
@@ -66,6 +67,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <LoadingDataWithReact />,
+  },
+  {
+    id: 8,
+    path: '/bar-chart',
+    title: 'Bar Chart',
+    isExact: true,
+    isNavItem: true,
+    render: () => <BarChart />,
   },
   {
     id: 0,
