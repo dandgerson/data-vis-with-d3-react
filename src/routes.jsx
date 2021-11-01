@@ -8,6 +8,7 @@ import ParseCsv from 'pages/ParseCsv'
 import LoadingDataWithReact from 'pages/LoadingDataWithReact'
 import VegaLiteApi from 'pages/VegaLiteApi'
 import BarChart from 'pages/BarChart'
+import ScatterPlot from 'pages/ScatterPlot'
 
 import Page404 from 'pages/Page404'
 
@@ -75,6 +76,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <BarChart />,
+  },
+  {
+    id: 9,
+    path: '/scatter-plot',
+    title: 'Scatter Plot',
+    isExact: true,
+    isNavItem: true,
+    render: () => <ScatterPlot />,
   },
   {
     id: 0,
