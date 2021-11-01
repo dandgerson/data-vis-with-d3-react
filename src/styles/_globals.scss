@@ -3,8 +3,6 @@
 }
 
 * {
-  // margin: 0;
-  // padding: 0;
   box-sizing: border-box;
 }
 
@@ -21,4 +19,37 @@ body {
 
 h2 {
   font-size: 1.5em;
+  margin-bottom: 6px;
+}
+
+p {
+  font-size: 1em;
+  margin-bottom: 6px;
+}
+
+.a {
+  transition: color $transition-props;
+
+  color: rgba($color-accent, 0.85);
+
+  &:hover,
+  &:active {
+    color: $color-accent;
+  }
+
+  &:visited {
+    color: rgba($color-accent, 0.5);
+  }
+}
+
+.separator {
+  &-v {
+    padding: 0 6px;
+
+    div {
+      height: 100%;
+      width: 2px;
+      background-color: rgba($color-accent, 0.25);
+    }
+  }
 }

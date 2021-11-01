@@ -7,6 +7,7 @@ import MouseFollower from 'pages/MouseFollower'
 import ParseCsv from 'pages/ParseCsv'
 import LoadingDataWithReact from 'pages/LoadingDataWithReact'
 import VegaLiteApi from 'pages/VegaLiteApi'
+import BarChart from 'pages/BarChart'
 
 import Page404 from 'pages/Page404'
 
@@ -24,7 +25,7 @@ const routes = [
     path: '/faces',
     title: 'Faces',
     isExact: true,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <Faces />,
   },
   {
@@ -32,7 +33,7 @@ const routes = [
     path: '/load-csv',
     title: 'Load CSV Data',
     isExact: true,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <LoadCsv />,
   },
   {
@@ -40,7 +41,7 @@ const routes = [
     path: '/mouse-follower',
     title: 'Mouse Follower',
     isExact: true,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <MouseFollower />,
   },
   {
@@ -48,7 +49,7 @@ const routes = [
     path: '/parse-csv-data-with-d3',
     title: 'Parse CSV Data with D3',
     isExact: true,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <ParseCsv />,
   },
   {
@@ -66,6 +67,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <LoadingDataWithReact />,
+  },
+  {
+    id: 8,
+    path: '/bar-chart',
+    title: 'Bar Chart',
+    isExact: true,
+    isNavItem: true,
+    render: () => <BarChart />,
   },
   {
     id: 0,

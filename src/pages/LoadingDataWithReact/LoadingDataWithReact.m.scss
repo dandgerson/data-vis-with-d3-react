@@ -1,13 +1,11 @@
 @import 'styles/variables';
 
-.separator {
-  &-v {
-    padding: 0 6px;
+.rotate {
+  animation: rotate 360s linear infinite;
+}
 
-    div {
-      height: 100%;
-      width: 2px;
-      background-color: rgba($color-accent, 1);
-    }
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
   }
 }
