@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
-import { scaleBand, scaleLinear } from 'd3'
+import { scaleBand, scaleLinear, format } from 'd3'
 
 import s from './BarChart.m.scss'
 
@@ -10,7 +10,7 @@ const BarChart = () => {
     'https://gist.githubusercontent.com/dandgerson/74072e8d929f78691f52b3bc2088771a/raw/worldPopulation2021.cvs',
     d => ({
       ...d,
-      population: Number.parseFloat(d['2020']),
+      population: Number.parseFloat(d['2020'] * 1000),
     }),
   )
 
@@ -24,7 +24,7 @@ const BarChart = () => {
     margin: {
       top: 20,
       right: 20,
-      bottom: 20,
+      bottom: 70,
       left: 200,
     },
     axis: {
@@ -35,6 +35,9 @@ const BarChart = () => {
       left: {
         dy: '.32em',
         margin: 3,
+      },
+      label: {
+        margin: 40,
       },
     },
   }
@@ -52,13 +55,15 @@ const BarChart = () => {
 
   const getYValue = d => d.Country
   const getXValue = d => d.population
+  const formatNumberValue = format('.2s')
+  const formatXAxisTick = tickValue => formatNumberValue(tickValue).replace('.0', '').replace('G', 'B')
 
   const d3Props = useMemo(
     () => ({
       yScale: scaleBand()
         .domain(processedData.map(getYValue))
         .range([0, svgContainerProps.innerHeight])
-        .padding(0.1),
+        .paddingInner(0.15),
       xScale: scaleLinear()
         .domain([0, Math.max(...processedData.map(getXValue))])
         .range([0, svgContainerProps.innerWidth]),
@@ -66,11 +71,11 @@ const BarChart = () => {
     [processedData],
   )
 
-  const renderAxisBottom = ({ xScale, height }) => xScale.ticks().map(tickValue => (
+  const renderAxisBottom = ({ xScale, height, formatTick }) => xScale.ticks().map(tickValue => (
     <g key={tickValue} transform={`translate(${xScale(tickValue)},0)`}>
       <line y2={height} className={s.axisBottom_line} />
       <text className={s.axisBottom_text} dy={c.axis.bottom.dy} y={height + c.axis.bottom.margin}>
-        {tickValue}
+        {formatTick(tickValue)}
       </text>
     </g>
   ))
@@ -87,7 +92,9 @@ const BarChart = () => {
     </text>
   ))
 
-  const renderMarks = ({ data, yScale, xScale }) => data.map(d => (
+  const renderMarks = ({
+    data, yScale, xScale, getYValue, getXValue, formatTooltip,
+  }) => data.map(d => (
     <rect
       key={getYValue(d)}
       className={s.mark}
@@ -95,7 +102,9 @@ const BarChart = () => {
       y={yScale(getYValue(d))}
       width={xScale(getXValue(d))}
       height={yScale.bandwidth()}
-    />
+    >
+      <title>{formatTooltip(getXValue(d))}</title>
+    </rect>
   ))
 
   return (
@@ -111,13 +120,11 @@ const BarChart = () => {
         }}
       >
         <h2>Bar Chart</h2>
-
-        <p>Making a Bar Chart with React and D3.</p>
         <br />
         <h2>Top-10 Countries Population by 2021</h2>
         <p>
           Total Population - Both Sexes. De facto population in a country as of 1 July of the year
-          indicated. Figures are presented in thousands.
+          indicated.
         </p>
         <a
           className='a'
@@ -150,6 +157,7 @@ const BarChart = () => {
               {renderAxisBottom({
                 xScale: d3Props.xScale,
                 height: svgContainerProps.innerHeight,
+                formatTick: formatXAxisTick,
               })}
             </g>
 
@@ -159,11 +167,24 @@ const BarChart = () => {
               })}
             </g>
 
+            <text
+              className={s.axisLabel}
+              x={svgContainerProps.innerWidth / 2}
+              y={svgContainerProps.innerHeight + c.axis.label.margin}
+              dy={c.axis.bottom.dy}
+              textAnchor='middle'
+            >
+              Top-10 Countries Population 2021
+            </text>
+
             <g data-marks>
               {renderMarks({
                 data: processedData,
                 xScale: d3Props.xScale,
                 yScale: d3Props.yScale,
+                getYValue,
+                getXValue,
+                formatTooltip: formatXAxisTick,
               })}
             </g>
           </g>
