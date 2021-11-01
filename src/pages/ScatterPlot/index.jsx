@@ -55,7 +55,7 @@ const ScatterPlot = () => {
   const getYValue = d => d.sepalWidth
 
   const formatNumberValue = format('.2s')
-  const formatXAxisTick = tickValue => formatNumberValue(tickValue).replace('.0', '')
+  const formatTick = tickValue => formatNumberValue(tickValue).replace('.0', '')
   const formatTooltip = tickValue => `${tickValue[0].toUpperCase()}${tickValue.slice(1)}`
 
   const svgContainerProps = useMemo(() => {
@@ -92,7 +92,7 @@ const ScatterPlot = () => {
     </g>
   ))
 
-  const renderAxisLeft = ({ yScale, width }) => yScale.ticks().map(tickValue => (
+  const renderAxisLeft = ({ yScale, width, formatTick }) => yScale.ticks().map(tickValue => (
     <g key={tickValue} transform={`translate(0,${yScale(tickValue)})`}>
       <line
         x1={0}
@@ -107,7 +107,7 @@ const ScatterPlot = () => {
         dy={c.axis.left.dy}
         x={0 - c.axis.left.margin}
       >
-        {tickValue}
+        {formatTick(tickValue)}
       </text>
     </g>
   ))
@@ -187,36 +187,37 @@ const ScatterPlot = () => {
               {renderAxisBottom({
                 xScale: d3Props.xScale,
                 height: svgContainerProps.innerHeight,
-                formatTick: formatXAxisTick,
+                formatTick,
               })}
+
+              <text
+                className={s.axisLabel}
+                x={svgContainerProps.innerWidth / 2}
+                y={svgContainerProps.innerHeight + c.axis.bottom.label.margin}
+                dy={c.axis.bottom.dy}
+                textAnchor='middle'
+              >
+                {c.axis.bottom.label.text}
+              </text>
             </g>
 
             <g data-axis-left>
               {renderAxisLeft({
                 yScale: d3Props.yScale,
                 width: svgContainerProps.innerWidth,
+                formatTick,
               })}
+
+              <text
+                className={s.axisLabel}
+                textAnchor='middle'
+                transform={`translate(${-c.axis.left.label.margin},${
+                  svgContainerProps.innerHeight / 2
+                }) rotate(-90)`}
+              >
+                {c.axis.left.label.text}
+              </text>
             </g>
-
-            <text
-              className={s.axisLabel}
-              textAnchor='middle'
-              transform={`translate(${-c.axis.left.label.margin},${
-                svgContainerProps.innerHeight / 2
-              }) rotate(-90)`}
-            >
-              {c.axis.left.label.text}
-            </text>
-
-            <text
-              className={s.axisLabel}
-              x={svgContainerProps.innerWidth / 2}
-              y={svgContainerProps.innerHeight + c.axis.bottom.label.margin}
-              dy={c.axis.bottom.dy}
-              textAnchor='middle'
-            >
-              {c.axis.bottom.label.text}
-            </text>
 
             <g data-marks>
               {renderMarks({
