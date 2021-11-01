@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
 import { scaleBand, scaleLinear } from 'd3'
@@ -26,6 +27,16 @@ const BarChart = () => {
       bottom: 20,
       left: 200,
     },
+    axis: {
+      bottom: {
+        dy: '.71em',
+        margin: 3,
+      },
+      left: {
+        dy: '.32em',
+        margin: 3,
+      },
+    },
   }
 
   const svgContainerProps = useMemo(() => {
@@ -39,17 +50,62 @@ const BarChart = () => {
     }
   }, [processedData])
 
+  const getYValue = d => d.Country
+  const getXValue = d => d.population
+
   const d3Props = useMemo(
     () => ({
       yScale: scaleBand()
-        .domain(processedData.map(d => d.Country))
+        .domain(processedData.map(getYValue))
         .range([0, svgContainerProps.innerHeight]),
       xScale: scaleLinear()
-        .domain([0, Math.max(...processedData.map(d => d.population))])
+        .domain([0, Math.max(...processedData.map(getXValue))])
         .range([0, svgContainerProps.innerWidth]),
     }),
     [processedData],
   )
+
+  const renderAxisBottom = ({ xScale, height }) => xScale.ticks().map(tickValue => (
+    <g key={tickValue} transform={`translate(${xScale(tickValue)},0)`}>
+      <line y2={height} stroke='white' />
+      <text
+        style={{
+          textAnchor: 'middle',
+          fill: 'white',
+        }}
+        dy={c.axis.bottom.dy}
+        y={height + c.axis.bottom.margin}
+      >
+        {tickValue}
+      </text>
+    </g>
+  ))
+
+  const renderAxisLeft = ({ yScale }) => yScale.domain().map(tickValue => (
+    <text
+      key={tickValue}
+      style={{
+        textAnchor: 'end',
+        fill: 'white',
+      }}
+      dy={c.axis.left.dy}
+      y={yScale(tickValue) + yScale.bandwidth() / 2}
+      x={0 - c.axis.left.margin}
+    >
+      {tickValue}
+    </text>
+  ))
+
+  const renderMarks = ({ data, yScale, xScale }) => data.map(d => (
+    <rect
+      key={getYValue(d)}
+      x={0}
+      y={yScale(getYValue(d))}
+      width={xScale(getXValue(d))}
+      height={yScale.bandwidth()}
+      stroke='white'
+    />
+  ))
 
   return (
     <div
@@ -85,46 +141,26 @@ const BarChart = () => {
           }}
         >
           <g transform={`translate(${c.margin.left},${c.margin.top})`}>
-            {d3Props.xScale.ticks().map(tickValue => (
-              <g key={tickValue} transform={`translate(${d3Props.xScale(tickValue)},0)`}>
-                <line y2={svgContainerProps.innerHeight} stroke='white' />
-                <text
-                  style={{
-                    textAnchor: 'middle',
-                    fill: 'white',
-                  }}
-                  dy='.71em'
-                  y={svgContainerProps.innerHeight + 3}
-                >
-                  {tickValue}
-                </text>
-              </g>
-            ))}
+            <g data-axis-bottom>
+              {renderAxisBottom({
+                xScale: d3Props.xScale,
+                height: svgContainerProps.innerHeight,
+              })}
+            </g>
 
-            {d3Props.yScale.domain().map(countryName => (
-              <text
-                style={{
-                  textAnchor: 'end',
-                  fill: 'white',
-                }}
-                dy='.32em'
-                y={d3Props.yScale(countryName) + d3Props.yScale.bandwidth() / 2}
-                x={-3}
-              >
-                {countryName}
-              </text>
-            ))}
+            <g data-axis-left>
+              {renderAxisLeft({
+                yScale: d3Props.yScale,
+              })}
+            </g>
 
-            {processedData.map(d => (
-              <rect
-                key={d.Country}
-                x={0}
-                y={d3Props.yScale(d.Country)}
-                width={d3Props.xScale(d.population)}
-                height={d3Props.yScale.bandwidth()}
-                stroke='white'
-              />
-            ))}
+            <g data-marks>
+              {renderMarks({
+                data: processedData,
+                xScale: d3Props.xScale,
+                yScale: d3Props.yScale,
+              })}
+            </g>
           </g>
         </svg>
       </div>
