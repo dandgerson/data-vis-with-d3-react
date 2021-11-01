@@ -1,1 +1,23 @@
 @import 'styles/variables';
+
+.axisBottom {
+  &_line {
+    stroke: $color-axis-line;
+  }
+  &_text {
+    text-anchor: middle;
+    fill: $color-axis-text;
+  }
+}
+
+.axisLeft {
+  &_text {
+    text-anchor: end;
+    fill: $color-axis-text;
+  }
+}
+
+.mark {
+  fill: rgba($color-accent, 0.5);
+  stroke: rgba($color-light, 0.5);
+}

@@ -1,12 +1,12 @@
-$color-accent: #7fabf7;
-$color-accent-50: rgba($color-accent, 0.5);
-
 $color-dark: rgb(29, 29, 32);
 $color-light: rgb(229, 231, 234);
+$color-accent: #7fabf7;
+
+$color-axis-line: rgb($color-light, 0.1);
+$color-axis-text: rgb($color-light, 0.5);
 
 $transition-props: 100ms linear;
 
 :export {
   colorAccent: $color-accent;
-  colorAccent50: $color-accent-50;
 }

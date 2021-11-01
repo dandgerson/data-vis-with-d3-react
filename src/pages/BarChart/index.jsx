@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
 import { scaleBand, scaleLinear } from 'd3'
 
-// import s from './BarChart.m.scss'
+import s from './BarChart.m.scss'
 
 const BarChart = () => {
   const [data] = useCsv(
@@ -57,7 +57,8 @@ const BarChart = () => {
     () => ({
       yScale: scaleBand()
         .domain(processedData.map(getYValue))
-        .range([0, svgContainerProps.innerHeight]),
+        .range([0, svgContainerProps.innerHeight])
+        .padding(0.1),
       xScale: scaleLinear()
         .domain([0, Math.max(...processedData.map(getXValue))])
         .range([0, svgContainerProps.innerWidth]),
@@ -67,15 +68,8 @@ const BarChart = () => {
 
   const renderAxisBottom = ({ xScale, height }) => xScale.ticks().map(tickValue => (
     <g key={tickValue} transform={`translate(${xScale(tickValue)},0)`}>
-      <line y2={height} stroke='white' />
-      <text
-        style={{
-          textAnchor: 'middle',
-          fill: 'white',
-        }}
-        dy={c.axis.bottom.dy}
-        y={height + c.axis.bottom.margin}
-      >
+      <line y2={height} className={s.axisBottom_line} />
+      <text className={s.axisBottom_text} dy={c.axis.bottom.dy} y={height + c.axis.bottom.margin}>
         {tickValue}
       </text>
     </g>
@@ -84,10 +78,7 @@ const BarChart = () => {
   const renderAxisLeft = ({ yScale }) => yScale.domain().map(tickValue => (
     <text
       key={tickValue}
-      style={{
-        textAnchor: 'end',
-        fill: 'white',
-      }}
+      className={s.axisLeft_text}
       dy={c.axis.left.dy}
       y={yScale(tickValue) + yScale.bandwidth() / 2}
       x={0 - c.axis.left.margin}
@@ -99,11 +90,11 @@ const BarChart = () => {
   const renderMarks = ({ data, yScale, xScale }) => data.map(d => (
     <rect
       key={getYValue(d)}
+      className={s.mark}
       x={0}
       y={yScale(getYValue(d))}
       width={xScale(getXValue(d))}
       height={yScale.bandwidth()}
-      stroke='white'
     />
   ))
 
@@ -122,6 +113,20 @@ const BarChart = () => {
         <h2>Bar Chart</h2>
 
         <p>Making a Bar Chart with React and D3.</p>
+        <br />
+        <h2>Top-10 Countries Population by 2021</h2>
+        <p>
+          Total Population - Both Sexes. De facto population in a country as of 1 July of the year
+          indicated. Figures are presented in thousands.
+        </p>
+        <a
+          className='a'
+          href='https://population.un.org/wpp/Download/Standard/Population/'
+          target='_blank'
+          rel='noreferrer'
+        >
+          Data fetched from unated nations site
+        </a>
       </div>
 
       <div className='separator-v'>

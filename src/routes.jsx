@@ -25,7 +25,7 @@ const routes = [
     path: '/faces',
     title: 'Faces',
     isExact: true,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <Faces />,
   },
   {
@@ -33,7 +33,7 @@ const routes = [
     path: '/load-csv',
     title: 'Load CSV Data',
     isExact: true,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <LoadCsv />,
   },
   {
@@ -41,7 +41,7 @@ const routes = [
     path: '/mouse-follower',
     title: 'Mouse Follower',
     isExact: true,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <MouseFollower />,
   },
   {
@@ -49,7 +49,7 @@ const routes = [
     path: '/parse-csv-data-with-d3',
     title: 'Parse CSV Data with D3',
     isExact: true,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <ParseCsv />,
   },
   {

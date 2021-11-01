@@ -22,6 +22,26 @@ h2 {
   margin-bottom: 6px;
 }
 
+p {
+  font-size: 1em;
+  margin-bottom: 6px;
+}
+
+.a {
+  transition: color $transition-props;
+
+  color: rgba($color-accent, 0.85);
+
+  &:hover,
+  &:active {
+    color: $color-accent;
+  }
+
+  &:visited {
+    color: rgba($color-accent, 0.5);
+  }
+}
+
 .separator {
   &-v {
     padding: 0 6px;
@@ -29,7 +49,7 @@ h2 {
     div {
       height: 100%;
       width: 2px;
-      background-color: rgba($color-accent, 1);
+      background-color: rgba($color-accent, 0.25);
     }
   }
 }
