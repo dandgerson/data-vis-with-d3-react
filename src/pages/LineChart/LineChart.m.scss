@@ -25,7 +25,16 @@
   fill: $color-light;
 }
 
-.mark {
-  fill: rgba($color-accent, 0.5);
-  stroke: rgba($color-light, 0.5);
+.marks {
+  &_line {
+    fill: none;
+    stroke: rgba($color-accent, 0.5);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  &_circle {
+    fill: rgba($color-accent, 0.25);
+    stroke: rgba($color-light, 0.25);
+  }
 }
