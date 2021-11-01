@@ -9,6 +9,7 @@ import LoadingDataWithReact from 'pages/LoadingDataWithReact'
 import VegaLiteApi from 'pages/VegaLiteApi'
 import BarChart from 'pages/BarChart'
 import ScatterPlot from 'pages/ScatterPlot'
+import LineChart from 'pages/LineChart'
 
 import Page404 from 'pages/Page404'
 
@@ -84,6 +85,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <ScatterPlot />,
+  },
+  {
+    id: 10,
+    path: '/line-chart',
+    title: 'Line Chart',
+    isExact: true,
+    isNavItem: true,
+    render: () => <LineChart />,
   },
   {
     id: 0,
