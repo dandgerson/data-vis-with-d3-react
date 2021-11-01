@@ -11,6 +11,7 @@ import ScatterPlot from 'pages/ScatterPlot'
 import LineChart from 'pages/LineChart'
 
 import Page404 from 'pages/Page404'
+import WorldMap from 'pages/WorldMap'
 
 const routes = [
   {
@@ -84,6 +85,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <LineChart />,
+  },
+  {
+    id: 11,
+    path: '/world-map',
+    title: 'World Map',
+    isExact: true,
+    isNavItem: true,
+    render: () => <WorldMap />,
   },
   {
     id: 0,
