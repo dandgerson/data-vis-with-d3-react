@@ -6,7 +6,6 @@ import LoadCsv from 'pages/LoadCsv'
 import MouseFollower from 'pages/MouseFollower'
 import ParseCsv from 'pages/ParseCsv'
 import LoadingDataWithReact from 'pages/LoadingDataWithReact'
-import VegaLiteApi from 'pages/VegaLiteApi'
 import BarChart from 'pages/BarChart'
 import ScatterPlot from 'pages/ScatterPlot'
 import LineChart from 'pages/LineChart'
@@ -53,14 +52,6 @@ const routes = [
     isExact: true,
     isNavItem: false,
     render: () => <ParseCsv />,
-  },
-  {
-    id: 6,
-    path: '/vega-lite-api',
-    title: 'Vega Lite API',
-    isExact: true,
-    isNavItem: true,
-    render: () => <VegaLiteApi />,
   },
   {
     id: 7,
