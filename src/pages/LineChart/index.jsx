@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
 import {
-  scaleLinear, scaleTime, timeFormat, extent,
+  scaleLinear, scaleTime, timeFormat, format, extent, line, curveNatural,
 } from 'd3'
 
 import s from './LineChart.m.scss'
@@ -46,7 +46,12 @@ const LineChart = () => {
       },
     },
     marks: {
-      radius: 10,
+      circle: {
+        radius: 5,
+      },
+      line: {
+        strokeWidth: 4,
+      },
     },
   }
 
@@ -54,7 +59,7 @@ const LineChart = () => {
   const getYValue = d => d.temperature
 
   const formatTick = timeFormat('%a')
-  const formatTooltip = tickValue => tickValue
+  const formatTooltip = tickValue => `${format('.4s')(tickValue)} C°`
 
   const svgContainerProps = useMemo(() => {
     const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
@@ -112,17 +117,29 @@ const LineChart = () => {
 
   const renderMarks = ({
     data, yScale, xScale, getYValue, getXValue, formatTooltip,
-  }) => data.map((d, i) => (
-    <circle
-      key={i}
-      className={s.mark}
-      cx={xScale(getXValue(d))}
-      cy={yScale(getYValue(d))}
-      r={c.marks.radius}
-    >
-      <title>{formatTooltip(d.temperature)}</title>
-    </circle>
-  ))
+  }) => (
+    <g className={s.renderMarks}>
+      <path
+        className={s.marks_line}
+        strokeWidth={c.marks.line.strokeWidth}
+        d={line()
+          .curve(curveNatural)
+          .x(d => xScale(d.timestamp))
+          .y(d => yScale(d.temperature))(data)}
+      />
+      {data.map((d, i) => (
+        <circle
+          key={i}
+          className={s.marks_circle}
+          cx={xScale(getXValue(d))}
+          cy={yScale(getYValue(d))}
+          r={c.marks.circle.radius}
+        >
+          <title>{formatTooltip(d.temperature)}</title>
+        </circle>
+      ))}
+    </g>
+  )
 
   return (
     <div
