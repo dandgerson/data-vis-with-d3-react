@@ -6,7 +6,7 @@ import countries50m from 'world-atlas/countries-50m.json'
 
 import s from './WorldMap.m.scss'
 
-const projection = geoEqualEarth()
+const projection = geoEqualEarth().scale(250).center([-60, 20])
 const path = geoPath(projection)
 const graticule = geoGraticule()
 
