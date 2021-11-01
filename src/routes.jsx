@@ -6,12 +6,12 @@ import LoadCsv from 'pages/LoadCsv'
 import MouseFollower from 'pages/MouseFollower'
 import ParseCsv from 'pages/ParseCsv'
 import LoadingDataWithReact from 'pages/LoadingDataWithReact'
-import VegaLiteApi from 'pages/VegaLiteApi'
 import BarChart from 'pages/BarChart'
 import ScatterPlot from 'pages/ScatterPlot'
 import LineChart from 'pages/LineChart'
 
 import Page404 from 'pages/Page404'
+import WorldMap from 'pages/WorldMap'
 
 const routes = [
   {
@@ -55,14 +55,6 @@ const routes = [
     render: () => <ParseCsv />,
   },
   {
-    id: 6,
-    path: '/vega-lite-api',
-    title: 'Vega Lite API',
-    isExact: true,
-    isNavItem: true,
-    render: () => <VegaLiteApi />,
-  },
-  {
     id: 7,
     path: '/loading-data-with-react',
     title: 'Loading Data with React',
@@ -93,6 +85,14 @@ const routes = [
     isExact: true,
     isNavItem: true,
     render: () => <LineChart />,
+  },
+  {
+    id: 11,
+    path: '/world-map',
+    title: 'World Map',
+    isExact: true,
+    isNavItem: true,
+    render: () => <WorldMap />,
   },
   {
     id: 0,
