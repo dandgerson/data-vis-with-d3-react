@@ -4,6 +4,7 @@ import { Switch, Route, useRouteMatch } from 'react-router-dom'
 
 import Nav from 'components/Nav'
 import routes from 'routes'
+import Azimuthal from 'pages/WorldMap/Azimuthal'
 
 const WorldMap = () => {
   const worldMapRoutes = routes.find(route => route.path === '/world-map').routes
@@ -34,11 +35,25 @@ const WorldMap = () => {
 
       <div
         style={{
+          display: 'flex',
           flex: 1,
         }}
       >
         <Switch>
-          <Route exact path={path} render={() => <h2>Select Projection</h2>} />
+          <Route
+            exact
+            path={path}
+            render={() => (
+              <div
+                style={{
+                  flex: 1,
+                }}
+              >
+                <Azimuthal />
+              </div>
+            )}
+          />
+
           {worldMapRoutes.map(route => (
             <Route
               key={route.id}
