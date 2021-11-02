@@ -12,6 +12,14 @@ import LineChart from 'pages/LineChart'
 
 import Page404 from 'pages/Page404'
 import WorldMap from 'pages/WorldMap'
+import EqualEarth from 'pages/WorldMap/EqualEarth'
+
+const route404 = {
+  id: 0,
+  path: '*',
+  title: 'Page404',
+  render: () => <Page404 />,
+}
 
 const routes = [
   {
@@ -58,7 +66,7 @@ const routes = [
     id: 7,
     path: '/loading-data-with-react',
     title: 'Loading Data with React',
-    isExact: true,
+    isExact: false,
     isNavItem: true,
     render: () => <LoadingDataWithReact />,
   },
@@ -66,7 +74,7 @@ const routes = [
     id: 8,
     path: '/bar-chart',
     title: 'Bar Chart',
-    isExact: true,
+    isExact: false,
     isNavItem: true,
     render: () => <BarChart />,
   },
@@ -74,7 +82,7 @@ const routes = [
     id: 9,
     path: '/scatter-plot',
     title: 'Scatter Plot',
-    isExact: true,
+    isExact: false,
     isNavItem: true,
     render: () => <ScatterPlot />,
   },
@@ -82,7 +90,7 @@ const routes = [
     id: 10,
     path: '/line-chart',
     title: 'Line Chart',
-    isExact: true,
+    isExact: false,
     isNavItem: true,
     render: () => <LineChart />,
   },
@@ -90,16 +98,32 @@ const routes = [
     id: 11,
     path: '/world-map',
     title: 'World Map',
-    isExact: true,
+    isExact: false,
     isNavItem: true,
     render: () => <WorldMap />,
+    routes: [
+      {
+        id: 111,
+        path: '/equal-earth',
+        title: 'Equal Earth Projection',
+        isExact: true,
+        isNavItem: true,
+        render: () => <EqualEarth />,
+        routes: [],
+      },
+      {
+        id: 112,
+        path: '/azimuthal',
+        title: 'Azimuthal Projection',
+        isExact: false,
+        isNavItem: true,
+        render: () => <EqualEarth />,
+        routes: [],
+      },
+      route404,
+    ],
   },
-  {
-    id: 0,
-    path: '*',
-    title: 'Page404',
-    render: () => <Page404 />,
-  },
+  route404,
 ]
 
 export default routes

@@ -1,38 +1,19 @@
 /* eslint-disable no-shadow */
-import React, { useMemo } from 'react'
-import { geoEqualEarth, geoPath, geoGraticule } from 'd3'
-import { feature, mesh } from 'topojson-client'
-import countries50m from 'world-atlas/countries-50m.json'
+import React from 'react'
+import { Switch, Route, useRouteMatch } from 'react-router-dom'
 
-import s from './WorldMap.m.scss'
-
-const projection = geoEqualEarth().scale(250).center([-60, 20])
-const path = geoPath(projection)
-const graticule = geoGraticule()
+import Nav from 'components/Nav'
+import routes from 'routes'
 
 const WorldMap = () => {
-  const data = useMemo(
-    () => ({
-      land: feature(countries50m, countries50m.objects.land),
-      interiors: mesh(countries50m, countries50m.objects.countries, (a, b) => a !== b),
-    }),
-    [],
-  )
+  const worldMapRoutes = routes.find(route => route.path === '/world-map').routes
+  const { path, url } = useRouteMatch()
 
   console.log({
-    data,
+    path,
+    url,
+    worldMapRoutes,
   })
-
-  const renderMarks = ({ data }) => (
-    <g data-marks className={s.marks}>
-      <path className={s.marks_sphere} d={path({ type: 'Sphere' })} />
-      <path className={s.marks_graticules} d={path(graticule())} />
-      {data.land.features.map((feature, i) => (
-        <path key={i} className={s.marks_land} d={path(feature)} />
-      ))}
-      <path className={s.marks_interiors} d={path(data.interiors)} />
-    </g>
-  )
 
   return (
     <div
@@ -48,8 +29,9 @@ const WorldMap = () => {
       >
         <h2>World Map</h2>
         <br />
-        <h2>The World Map with D3</h2>
-        <p>This is the world map</p>
+        <h2>Projections:</h2>
+
+        <Nav routes={worldMapRoutes} isColumn isSubNav />
       </div>
 
       <div className='separator-v'>
@@ -61,15 +43,19 @@ const WorldMap = () => {
           flex: 1,
         }}
       >
-        <svg
-          data-svg-container
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-        >
-          {renderMarks({ data })}
-        </svg>
+        <Switch>
+          <Route exact path={path} render={() => <h2>Select Projection</h2>} />
+          {worldMapRoutes.map(
+            route => console.log(`${path}${route.path}`) || (
+            <Route
+              key={route.id}
+              exact={route.isExact}
+              path={`${path}${route.path}`}
+              render={route.render}
+            />
+            ),
+          )}
+        </Switch>
       </div>
     </div>
   )

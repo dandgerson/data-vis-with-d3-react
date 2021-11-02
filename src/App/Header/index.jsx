@@ -1,6 +1,7 @@
 import React from 'react'
 
-import Nav from './Nav'
+import Nav from 'components/Nav'
+import routes from 'routes'
 
 import s from './Header.m.scss'
 
@@ -11,7 +12,7 @@ const Header = () => (
     </div>
 
     <div className={s.nav}>
-      <Nav />
+      <Nav routes={routes} />
     </div>
   </div>
 )
