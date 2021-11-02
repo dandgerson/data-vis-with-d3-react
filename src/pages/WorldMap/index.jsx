@@ -7,13 +7,7 @@ import routes from 'routes'
 
 const WorldMap = () => {
   const worldMapRoutes = routes.find(route => route.path === '/world-map').routes
-  const { path, url } = useRouteMatch()
-
-  console.log({
-    path,
-    url,
-    worldMapRoutes,
-  })
+  const { path } = useRouteMatch()
 
   return (
     <div
@@ -45,16 +39,14 @@ const WorldMap = () => {
       >
         <Switch>
           <Route exact path={path} render={() => <h2>Select Projection</h2>} />
-          {worldMapRoutes.map(
-            route => console.log(`${path}${route.path}`) || (
+          {worldMapRoutes.map(route => (
             <Route
               key={route.id}
               exact={route.isExact}
               path={`${path}${route.path}`}
               render={route.render}
             />
-            ),
-          )}
+          ))}
         </Switch>
       </div>
     </div>

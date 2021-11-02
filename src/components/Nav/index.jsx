@@ -2,15 +2,12 @@ import React from 'react'
 import cl from 'clsx'
 import PropTypes from 'prop-types'
 
-import { NavLink, useRouteMatch, useLocation } from 'react-router-dom'
+import { NavLink, useRouteMatch } from 'react-router-dom'
 
 import s from './Nav.m.scss'
 
 const Nav = ({ routes, isColumn, isSubNav }) => {
-  const { url, path } = useRouteMatch()
-  const location = useLocation()
-
-  console.log('nav', { url, path, pathname: location.pathname })
+  const { url } = useRouteMatch()
 
   return (
     <div
