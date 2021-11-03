@@ -21,10 +21,6 @@ const ScatterPlot = () => {
     }),
   )
 
-  console.log({
-    data,
-  })
-
   const options = useMemo(
     () => (data.length
       ? Object.keys(data[0])
@@ -97,15 +93,17 @@ const ScatterPlot = () => {
   }
 
   const [hoveredValue, setHoveredValue] = useState('')
-  const [selectedValue, setSelectedValue] = useState('')
+  const [selectedValues, setSelectedValues] = useState([])
 
   const getXValue = d => d[selectedX]
   const getYValue = d => d[selectedY]
   const getColorValue = d => d.species
 
   const filteredData = useMemo(
-    () => data.filter(d => [hoveredValue, selectedValue].includes(getColorValue(d))),
-    [hoveredValue, selectedValue],
+    () => data.filter(
+      d => [hoveredValue].includes(getColorValue(d)) || selectedValues.includes(getColorValue(d)),
+    ),
+    [hoveredValue, selectedValues],
   )
 
   const formatNumberValue = format('.2s')
@@ -169,8 +167,6 @@ const ScatterPlot = () => {
     </g>
   ))
 
-  console.log({ hoveredValue, selectedValue })
-
   const renderLegend = ({ colorScale }) => colorScale.domain().map((domainValue, i) => (
     <g
       key={domainValue}
@@ -179,9 +175,15 @@ const ScatterPlot = () => {
       transform={`translate(0,${i * c.legend.tick.spacing})`}
       onMouseEnter={() => setHoveredValue(domainValue)}
       onMouseLeave={() => setHoveredValue('')}
-      onClick={() => (selectedValue === domainValue ? setSelectedValue('') : setSelectedValue(domainValue))}
+      onClick={() => (selectedValues.includes(domainValue)
+        ? setSelectedValues(
+          selectedValues.filter(selectedValue => selectedValue !== domainValue),
+        )
+        : setSelectedValues([...selectedValues, domainValue]))}
       opacity={
-          [hoveredValue, selectedValue].includes(domainValue) || (!hoveredValue && !selectedValue)
+          [hoveredValue].includes(domainValue)
+          || selectedValues.includes(domainValue)
+          || (!hoveredValue && !selectedValues.length)
             ? 1
             : c.marks.opacity
         }
@@ -337,7 +339,7 @@ const ScatterPlot = () => {
               })}
             </g>
 
-            <g data-marks opacity={hoveredValue || selectedValue ? c.marks.opacity : 1}>
+            <g data-marks opacity={hoveredValue || selectedValues.length ? c.marks.opacity : 1}>
               {renderMarks({
                 data,
                 xScale: d3Props.xScale,
