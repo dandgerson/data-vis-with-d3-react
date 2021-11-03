@@ -1,6 +1,8 @@
 $color-dark: rgb(29, 29, 32);
 $color-light: rgb(229, 231, 234);
 $color-accent: #7fabf7;
+$color-accent-2: rgb(47, 189, 172);
+$color-accent-3: rgb(119, 92, 177);
 
 $color-axis-line: rgb($color-light, 0.1);
 $color-axis-text: rgb($color-light, 0.5);
@@ -9,4 +11,6 @@ $transition-props: 100ms linear;
 
 :export {
   colorAccent: $color-accent;
+  colorAccent2: $color-accent-2;
+  colorAccent3: $color-accent-3;
 }

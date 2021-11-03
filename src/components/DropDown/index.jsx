@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-// import s from './DropDown.m.scss'
+import s from './DropDown.m.scss'
 
 const DropDown = ({
   label, options, id, selectedValue, setSelectedValue,
 }) => (
-  <div>
+  <div className={s.root}>
     {label ? <label htmlFor={id}>{label}</label> : null}
 
     <select

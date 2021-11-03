@@ -1,7 +1,9 @@
 /* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
-import { scaleLinear, format, extent } from 'd3'
+import {
+  scaleLinear, scaleOrdinal, format, extent,
+} from 'd3'
 
 import { useDropDown } from 'components/DropDown'
 
@@ -85,6 +87,7 @@ const ScatterPlot = () => {
 
   const getXValue = d => d[selectedX]
   const getYValue = d => d[selectedY]
+  const getColorValue = d => d.species
 
   const formatNumberValue = format('.2s')
   const formatTick = tickValue => formatNumberValue(tickValue).replace('.0', '')
@@ -111,6 +114,9 @@ const ScatterPlot = () => {
         .domain(extent(data, getYValue).reverse())
         .range([0, svgContainerProps.innerHeight])
         .nice(),
+      colorScale: scaleOrdinal()
+        .domain(data.map(getColorValue))
+        .range([s.colorAccent, s.colorAccent2, s.colorAccent3]),
     }),
     [data, selectedX, selectedY],
   )
@@ -145,7 +151,14 @@ const ScatterPlot = () => {
   ))
 
   const renderMarks = ({
-    data, yScale, xScale, getYValue, getXValue, formatTooltip,
+    data,
+    yScale,
+    xScale,
+    colorScale,
+    getYValue,
+    getXValue,
+    getColorValue,
+    formatTooltip,
   }) => data.map((d, i) => (
     <circle
       key={i}
@@ -153,15 +166,11 @@ const ScatterPlot = () => {
       cx={xScale(getXValue(d))}
       cy={yScale(getYValue(d))}
       r={c.marks.radius}
+      fill={colorScale(getColorValue(d))}
     >
       <title>{formatTooltip(d.species)}</title>
     </circle>
   ))
-
-  console.log({
-    selectedX,
-    selectedY,
-  })
 
   return (
     <div
@@ -205,8 +214,18 @@ const ScatterPlot = () => {
         <br />
         <br />
 
-        {xSelectDropDown}
-        {YSelectDropDown}
+        <div
+          data-controls
+          style={{
+            display: 'flex',
+          }}
+        >
+          {xSelectDropDown}
+
+          <br />
+
+          {YSelectDropDown}
+        </div>
       </div>
 
       <div className='separator-v'>
@@ -267,8 +286,10 @@ const ScatterPlot = () => {
                 data,
                 xScale: d3Props.xScale,
                 yScale: d3Props.yScale,
+                colorScale: d3Props.colorScale,
                 getYValue,
                 getXValue,
+                getColorValue,
                 formatTooltip,
               })}
             </g>
