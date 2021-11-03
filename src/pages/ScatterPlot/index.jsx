@@ -3,6 +3,8 @@ import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
 import { scaleLinear, format, extent } from 'd3'
 
+import { useDropDown } from 'components/DropDown'
+
 import s from './ScatterPlot.m.scss'
 
 const ScatterPlot = () => {
@@ -21,6 +23,38 @@ const ScatterPlot = () => {
     data,
   })
 
+  const options = useMemo(
+    () => (data.length
+      ? Object.keys(data[0])
+        .filter(key => key !== 'species')
+        .map(key => ({
+          label: key,
+          value: key,
+        }))
+      : [{ label: '', value: '' }]),
+    [data],
+  )
+
+  const [xSelectDropDown, selectedX] = useDropDown(
+    {
+      label: 'x-select: ',
+      id: 'x-select',
+      options,
+      initialValue: 'sepalLength',
+    },
+    [options],
+  )
+
+  const [YSelectDropDown, selectedY] = useDropDown(
+    {
+      label: 'y-select: ',
+      id: 'y-select',
+      options,
+      initialValue: 'sepalWidth',
+    },
+    [options],
+  )
+
   const c = {
     margin: {
       top: 20,
@@ -33,7 +67,6 @@ const ScatterPlot = () => {
         dy: '.71em',
         margin: 8,
         label: {
-          text: 'Sepal Length',
           margin: 40,
         },
       },
@@ -41,7 +74,6 @@ const ScatterPlot = () => {
         dy: '.32em',
         margin: 8,
         label: {
-          text: 'Sepal Width',
           margin: 40,
         },
       },
@@ -51,8 +83,8 @@ const ScatterPlot = () => {
     },
   }
 
-  const getXValue = d => d.sepalLength
-  const getYValue = d => d.sepalWidth
+  const getXValue = d => d[selectedX]
+  const getYValue = d => d[selectedY]
 
   const formatNumberValue = format('.2s')
   const formatTick = tickValue => formatNumberValue(tickValue).replace('.0', '')
@@ -80,7 +112,7 @@ const ScatterPlot = () => {
         .range([0, svgContainerProps.innerHeight])
         .nice(),
     }),
-    [data],
+    [data, selectedX, selectedY],
   )
 
   const renderAxisBottom = ({ xScale, height, formatTick }) => xScale.ticks().map(tickValue => (
@@ -126,6 +158,11 @@ const ScatterPlot = () => {
     </circle>
   ))
 
+  console.log({
+    selectedX,
+    selectedY,
+  })
+
   return (
     <div
       style={{
@@ -164,6 +201,12 @@ const ScatterPlot = () => {
         >
           Data fetched from Curran gist
         </a>
+
+        <br />
+        <br />
+
+        {xSelectDropDown}
+        {YSelectDropDown}
       </div>
 
       <div className='separator-v'>
@@ -197,7 +240,7 @@ const ScatterPlot = () => {
                 dy={c.axis.bottom.dy}
                 textAnchor='middle'
               >
-                {c.axis.bottom.label.text}
+                {selectedX}
               </text>
             </g>
 
@@ -215,7 +258,7 @@ const ScatterPlot = () => {
                   svgContainerProps.innerHeight / 2
                 }) rotate(-90)`}
               >
-                {c.axis.left.label.text}
+                {selectedY}
               </text>
             </g>
 

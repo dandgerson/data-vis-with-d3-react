@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 // import s from './DropDown.m.scss'
@@ -37,8 +37,12 @@ DropDown.propTypes = {
 
 export default DropDown
 
-export const useDropDown = ({ label, options, id }) => {
-  const [selectedValue, setSelectedValue] = useState(options[0].value)
+export const useDropDown = ({
+  label, options, id, initialValue = options[0].value,
+}, deps = []) => {
+  const [selectedValue, setSelectedValue] = useState(initialValue)
+
+  useEffect(() => setSelectedValue(initialValue), deps)
 
   return [
     <DropDown
