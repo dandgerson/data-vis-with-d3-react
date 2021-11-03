@@ -60,7 +60,7 @@ const ScatterPlot = () => {
   const c = {
     margin: {
       top: 20,
-      right: 20,
+      right: 250,
       bottom: 70,
       left: 80,
     },
@@ -83,11 +83,21 @@ const ScatterPlot = () => {
     marks: {
       radius: 10,
     },
+    legend: {
+      xOffset: 40,
+      yOffset: 40,
+      tick: {
+        radius: 10,
+        spacing: 40,
+        dy: '.16em',
+      },
+    },
   }
 
   const getXValue = d => d[selectedX]
   const getYValue = d => d[selectedY]
   const getColorValue = d => d.species
+  const legendLabel = 'Species'
 
   const formatNumberValue = format('.2s')
   const formatTick = tickValue => formatNumberValue(tickValue).replace('.0', '')
@@ -147,6 +157,18 @@ const ScatterPlot = () => {
       >
         {formatTick(tickValue)}
       </text>
+    </g>
+  ))
+
+  const renderLegend = ({ colorScale }) => colorScale.domain().map((domainValue, i) => (
+    <g
+      key={domainValue}
+      data-legend-item
+      className={s.legendItem}
+      transform={`translate(0,${i * c.legend.tick.spacing})`}
+    >
+      <circle fill={colorScale(domainValue)} r={c.legend.tick.radius} />
+      <text x={15} dy={c.legend.tick.dy}>{`- ${formatTooltip(domainValue)}`}</text>
     </g>
   ))
 
@@ -279,6 +301,21 @@ const ScatterPlot = () => {
               >
                 {selectedY}
               </text>
+            </g>
+
+            <g
+              data-legend
+              transform={`translate(${svgContainerProps.innerWidth + c.legend.xOffset},${
+                c.legend.yOffset
+              })`}
+            >
+              <text className={s.axisLabel} textAnchor='start' dy={-40} dx={-10}>
+                {legendLabel}
+              </text>
+
+              {renderLegend({
+                colorScale: d3Props.colorScale,
+              })}
             </g>
 
             <g data-marks>
