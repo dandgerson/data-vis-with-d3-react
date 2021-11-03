@@ -1,14 +1,14 @@
 /* eslint-disable no-shadow */
 import React, { useMemo, useEffect, useState } from 'react'
-import { geoAzimuthalEquidistant, geoPath, geoGraticule } from 'd3'
+import PropTypes from 'prop-types'
+import { geoPath, geoGraticule } from 'd3'
 import { feature, mesh } from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
 
-import s from './Azimuthal.m.scss'
+import s from './Map.m.scss'
 
-const Azimuthal = () => {
+const Map = ({ projection }) => {
   const { path, graticule, data } = useMemo(() => {
-    const projection = geoAzimuthalEquidistant().rotate([0, -90])
     const path = geoPath(projection)
     const graticule = geoGraticule()
 
@@ -20,7 +20,7 @@ const Azimuthal = () => {
         interiors: mesh(countries50m, countries50m.objects.countries, (a, b) => a !== b),
       },
     }
-  }, [])
+  }, [projection])
 
   const [size, setSize] = useState({ svgWidth: 0, svgHeight: 0 })
 
@@ -69,4 +69,8 @@ const Azimuthal = () => {
   )
 }
 
-export default Azimuthal
+Map.propTypes = {
+  projection: PropTypes.func.isRequired,
+}
+
+export default Map

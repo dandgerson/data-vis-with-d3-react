@@ -1,7 +1,10 @@
 import React from 'react'
-import Azimuthal from 'pages/WorldMap/Azimuthal'
+import { geoAzimuthalEquidistant } from 'd3'
+
+import Map from 'pages/WorldMap/Map'
 
 // import s from './Home.m.scss'
+const projection = geoAzimuthalEquidistant().rotate([0, -90])
 
 const Home = () => (
   <div
@@ -12,7 +15,7 @@ const Home = () => (
       justifyContent: 'center',
     }}
   >
-    <Azimuthal />
+    <Map projection={projection} />
   </div>
 )
 

@@ -38,7 +38,7 @@ const ScatterPlot = () => {
       label: 'x-select: ',
       id: 'x-select',
       options,
-      initialValue: 'sepalLength',
+      initialValue: options[0],
     },
     [options],
   )
@@ -48,7 +48,7 @@ const ScatterPlot = () => {
       label: 'y-select: ',
       id: 'y-select',
       options,
-      initialValue: 'sepalWidth',
+      initialValue: options[1],
     },
     [options],
   )
@@ -96,8 +96,8 @@ const ScatterPlot = () => {
   const [hoveredValue, setHoveredValue] = useState('')
   const [selectedValues, setSelectedValues] = useState([])
 
-  const getXValue = d => d[selectedX]
-  const getYValue = d => d[selectedY]
+  const getXValue = d => d[selectedX.value]
+  const getYValue = d => d[selectedY.value]
   const getColorValue = d => d.species
 
   const filteredData = useMemo(
@@ -317,7 +317,7 @@ const ScatterPlot = () => {
                 dy={c.axis.bottom.dy}
                 textAnchor='middle'
               >
-                {selectedX}
+                {selectedX.value}
               </text>
             </g>
 
@@ -335,7 +335,7 @@ const ScatterPlot = () => {
                   svgContainerProps.innerHeight / 2
                 }) rotate(-90)`}
               >
-                {selectedY}
+                {selectedY.value}
               </text>
             </g>
 

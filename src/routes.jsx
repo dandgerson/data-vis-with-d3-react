@@ -12,8 +12,6 @@ import LineChart from 'pages/LineChart'
 
 import Page404 from 'pages/Page404'
 import WorldMap from 'pages/WorldMap'
-import EqualEarth from 'pages/WorldMap/EqualEarth'
-import Azimuthal from 'pages/WorldMap/Azimuthal'
 
 const route404 = {
   id: 0,
@@ -102,27 +100,6 @@ const routes = [
     isExact: false,
     isNavItem: true,
     render: () => <WorldMap />,
-    routes: [
-      {
-        id: 111,
-        path: '/equal-earth',
-        title: 'Equal Earth Projection',
-        isExact: true,
-        isNavItem: true,
-        render: () => <EqualEarth />,
-        routes: [],
-      },
-      {
-        id: 112,
-        path: '/azimuthal',
-        title: 'Azimuthal Projection',
-        isExact: false,
-        isNavItem: true,
-        render: () => <Azimuthal />,
-        routes: [],
-      },
-      route404,
-    ],
   },
   route404,
 ]

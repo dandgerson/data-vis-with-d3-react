@@ -1,29 +1,32 @@
 /* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
+import { geoAzimuthalEquidistant, geoEqualEarth } from 'd3'
 
-import routes from 'routes'
 import { useDropDown } from 'components/DropDown'
+import Map from 'pages/WorldMap/Map'
 
 const WorldMap = () => {
-  const worldMapRoutes = routes.find(route => route.path === '/world-map').routes
-
-  const options = worldMapRoutes
-    .filter(route => route.path !== '*')
-    .map(route => ({
-      value: route.path,
-      label: route.title,
-    }))
+  const options = useMemo(
+    () => [
+      {
+        projection: geoAzimuthalEquidistant().rotate([0, -90]),
+        value: 'AzimuthalEquidistant',
+        label: 'Azimuthal Projection',
+      },
+      {
+        projection: geoEqualEarth().scale(140),
+        value: 'EqualEarth',
+        label: 'Equal Earth Projection',
+      },
+    ],
+    [],
+  )
 
   const [dropDownProjection, selectedProjection] = useDropDown({
     id: 'projections',
     label: 'Choose Projection: ',
     options,
   })
-
-  const projection = useMemo(
-    () => worldMapRoutes.find(route => route.path === selectedProjection),
-    [selectedProjection],
-  )
 
   return (
     <div
@@ -55,8 +58,8 @@ const WorldMap = () => {
           flex: 1,
         }}
       >
-        <h2>{projection.title}</h2>
-        {projection.render()}
+        <h2>{selectedProjection.label}</h2>
+        <Map projection={selectedProjection.projection} />
       </div>
     </div>
   )
