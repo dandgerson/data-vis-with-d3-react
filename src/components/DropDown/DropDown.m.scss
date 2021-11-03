@@ -1,0 +1,18 @@
+@import 'styles/variables';
+
+.root {
+  label {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  select {
+    border: 2px solid $color-accent;
+    border-radius: 4px;
+    font-size: 1.2em;
+  }
+
+  option {
+    font-size: 1.2em;
+  }
+}

@@ -1,7 +1,11 @@
 /* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
-import { scaleLinear, format, extent } from 'd3'
+import {
+  scaleLinear, scaleOrdinal, format, extent,
+} from 'd3'
+
+import { useDropDown } from 'components/DropDown'
 
 import s from './ScatterPlot.m.scss'
 
@@ -21,6 +25,38 @@ const ScatterPlot = () => {
     data,
   })
 
+  const options = useMemo(
+    () => (data.length
+      ? Object.keys(data[0])
+        .filter(key => key !== 'species')
+        .map(key => ({
+          label: key,
+          value: key,
+        }))
+      : [{ label: '', value: '' }]),
+    [data],
+  )
+
+  const [xSelectDropDown, selectedX] = useDropDown(
+    {
+      label: 'x-select: ',
+      id: 'x-select',
+      options,
+      initialValue: 'sepalLength',
+    },
+    [options],
+  )
+
+  const [YSelectDropDown, selectedY] = useDropDown(
+    {
+      label: 'y-select: ',
+      id: 'y-select',
+      options,
+      initialValue: 'sepalWidth',
+    },
+    [options],
+  )
+
   const c = {
     margin: {
       top: 20,
@@ -33,7 +69,6 @@ const ScatterPlot = () => {
         dy: '.71em',
         margin: 8,
         label: {
-          text: 'Sepal Length',
           margin: 40,
         },
       },
@@ -41,7 +76,6 @@ const ScatterPlot = () => {
         dy: '.32em',
         margin: 8,
         label: {
-          text: 'Sepal Width',
           margin: 40,
         },
       },
@@ -51,8 +85,9 @@ const ScatterPlot = () => {
     },
   }
 
-  const getXValue = d => d.sepalLength
-  const getYValue = d => d.sepalWidth
+  const getXValue = d => d[selectedX]
+  const getYValue = d => d[selectedY]
+  const getColorValue = d => d.species
 
   const formatNumberValue = format('.2s')
   const formatTick = tickValue => formatNumberValue(tickValue).replace('.0', '')
@@ -79,8 +114,11 @@ const ScatterPlot = () => {
         .domain(extent(data, getYValue).reverse())
         .range([0, svgContainerProps.innerHeight])
         .nice(),
+      colorScale: scaleOrdinal()
+        .domain(data.map(getColorValue))
+        .range([s.colorAccent, s.colorAccent2, s.colorAccent3]),
     }),
-    [data],
+    [data, selectedX, selectedY],
   )
 
   const renderAxisBottom = ({ xScale, height, formatTick }) => xScale.ticks().map(tickValue => (
@@ -113,7 +151,14 @@ const ScatterPlot = () => {
   ))
 
   const renderMarks = ({
-    data, yScale, xScale, getYValue, getXValue, formatTooltip,
+    data,
+    yScale,
+    xScale,
+    colorScale,
+    getYValue,
+    getXValue,
+    getColorValue,
+    formatTooltip,
   }) => data.map((d, i) => (
     <circle
       key={i}
@@ -121,6 +166,7 @@ const ScatterPlot = () => {
       cx={xScale(getXValue(d))}
       cy={yScale(getYValue(d))}
       r={c.marks.radius}
+      fill={colorScale(getColorValue(d))}
     >
       <title>{formatTooltip(d.species)}</title>
     </circle>
@@ -164,6 +210,22 @@ const ScatterPlot = () => {
         >
           Data fetched from Curran gist
         </a>
+
+        <br />
+        <br />
+
+        <div
+          data-controls
+          style={{
+            display: 'flex',
+          }}
+        >
+          {xSelectDropDown}
+
+          <br />
+
+          {YSelectDropDown}
+        </div>
       </div>
 
       <div className='separator-v'>
@@ -197,7 +259,7 @@ const ScatterPlot = () => {
                 dy={c.axis.bottom.dy}
                 textAnchor='middle'
               >
-                {c.axis.bottom.label.text}
+                {selectedX}
               </text>
             </g>
 
@@ -215,7 +277,7 @@ const ScatterPlot = () => {
                   svgContainerProps.innerHeight / 2
                 }) rotate(-90)`}
               >
-                {c.axis.left.label.text}
+                {selectedY}
               </text>
             </g>
 
@@ -224,8 +286,10 @@ const ScatterPlot = () => {
                 data,
                 xScale: d3Props.xScale,
                 yScale: d3Props.yScale,
+                colorScale: d3Props.colorScale,
                 getYValue,
                 getXValue,
+                getColorValue,
                 formatTooltip,
               })}
             </g>
