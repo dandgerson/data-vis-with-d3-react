@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import useCsv from 'hooks/useCsv'
 import {
   scaleLinear, scaleOrdinal, format, extent,
@@ -20,10 +20,6 @@ const ScatterPlot = () => {
       species: d.species,
     }),
   )
-
-  console.log({
-    data,
-  })
 
   const options = useMemo(
     () => (data.length
@@ -60,7 +56,7 @@ const ScatterPlot = () => {
   const c = {
     margin: {
       top: 20,
-      right: 20,
+      right: 250,
       bottom: 70,
       left: 80,
     },
@@ -82,12 +78,33 @@ const ScatterPlot = () => {
     },
     marks: {
       radius: 10,
+      opacity: 0.25,
+    },
+    legend: {
+      label: 'Species',
+      xOffset: 60,
+      yOffset: 60,
+      tick: {
+        radius: 10,
+        spacing: 40,
+        dy: '.16em',
+      },
     },
   }
+
+  const [hoveredValue, setHoveredValue] = useState('')
+  const [selectedValues, setSelectedValues] = useState([])
 
   const getXValue = d => d[selectedX]
   const getYValue = d => d[selectedY]
   const getColorValue = d => d.species
+
+  const filteredData = useMemo(
+    () => data.filter(
+      d => [hoveredValue].includes(getColorValue(d)) || selectedValues.includes(getColorValue(d)),
+    ),
+    [hoveredValue, selectedValues],
+  )
 
   const formatNumberValue = format('.2s')
   const formatTick = tickValue => formatNumberValue(tickValue).replace('.0', '')
@@ -147,6 +164,32 @@ const ScatterPlot = () => {
       >
         {formatTick(tickValue)}
       </text>
+    </g>
+  ))
+
+  const renderLegend = ({ colorScale }) => colorScale.domain().map((domainValue, i) => (
+    <g
+      key={domainValue}
+      data-legend-item
+      className={s.legendItem}
+      transform={`translate(0,${i * c.legend.tick.spacing})`}
+      onMouseEnter={() => setHoveredValue(domainValue)}
+      onMouseLeave={() => setHoveredValue('')}
+      onClick={() => (selectedValues.includes(domainValue)
+        ? setSelectedValues(
+          selectedValues.filter(selectedValue => selectedValue !== domainValue),
+        )
+        : setSelectedValues([...selectedValues, domainValue]))}
+      opacity={
+          [hoveredValue].includes(domainValue)
+          || selectedValues.includes(domainValue)
+          || (!hoveredValue && !selectedValues.length)
+            ? 1
+            : c.marks.opacity
+        }
+    >
+      <circle fill={colorScale(domainValue)} r={c.legend.tick.radius} />
+      <text x={15} dy={c.legend.tick.dy}>{`- ${formatTooltip(domainValue)}`}</text>
     </g>
   ))
 
@@ -281,7 +324,22 @@ const ScatterPlot = () => {
               </text>
             </g>
 
-            <g data-marks>
+            <g
+              data-legend
+              transform={`translate(${svgContainerProps.innerWidth + c.legend.xOffset},${
+                c.legend.yOffset
+              })`}
+            >
+              <text className={s.axisLabel} textAnchor='start' dy={-40} dx={-10}>
+                {c.legend.label}
+              </text>
+
+              {renderLegend({
+                colorScale: d3Props.colorScale,
+              })}
+            </g>
+
+            <g data-marks opacity={hoveredValue || selectedValues.length ? c.marks.opacity : 1}>
               {renderMarks({
                 data,
                 xScale: d3Props.xScale,
@@ -293,6 +351,21 @@ const ScatterPlot = () => {
                 formatTooltip,
               })}
             </g>
+
+            {filteredData.length ? (
+              <g data-marks-filtered>
+                {renderMarks({
+                  data: filteredData,
+                  xScale: d3Props.xScale,
+                  yScale: d3Props.yScale,
+                  colorScale: d3Props.colorScale,
+                  getYValue,
+                  getXValue,
+                  getColorValue,
+                  formatTooltip,
+                })}
+              </g>
+            ) : null}
           </g>
         </svg>
       </div>

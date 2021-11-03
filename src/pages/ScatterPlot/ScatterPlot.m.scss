@@ -29,3 +29,15 @@
   // fill: rgba($color-accent, 0.5);
   stroke: rgba($color-light, 0.5);
 }
+
+.legendItem {
+  cursor: pointer;
+
+  circle {
+    stroke: rgba($color-light, 0.5);
+  }
+
+  text {
+    fill: $color-light;
+  }
+}
