@@ -79,6 +79,7 @@ const ScatterPlot = () => {
     marks: {
       radius: 10,
       opacity: 0.25,
+      selectedRadius: 3,
     },
     legend: {
       label: 'Species',
@@ -189,6 +190,9 @@ const ScatterPlot = () => {
         }
     >
       <circle fill={colorScale(domainValue)} r={c.legend.tick.radius} />
+      {selectedValues.includes(domainValue) ? (
+        <circle r={c.legend.tick.radius / c.marks.selectedRadius} />
+      ) : null}
       <text x={15} dy={c.legend.tick.dy}>{`- ${formatTooltip(domainValue)}`}</text>
     </g>
   ))
@@ -203,16 +207,27 @@ const ScatterPlot = () => {
     getColorValue,
     formatTooltip,
   }) => data.map((d, i) => (
-    <circle
-      key={i}
-      className={s.mark}
-      cx={xScale(getXValue(d))}
-      cy={yScale(getYValue(d))}
-      r={c.marks.radius}
-      fill={colorScale(getColorValue(d))}
-    >
-      <title>{formatTooltip(d.species)}</title>
-    </circle>
+    <g key={i}>
+      <circle
+        className={s.mark}
+        cx={xScale(getXValue(d))}
+        cy={yScale(getYValue(d))}
+        r={c.marks.radius}
+        fill={colorScale(getColorValue(d))}
+      >
+        <title>{formatTooltip(d.species)}</title>
+      </circle>
+
+      {selectedValues.includes(d.species) ? (
+        <circle
+          cx={xScale(getXValue(d))}
+          cy={yScale(getYValue(d))}
+          r={c.marks.radius / c.marks.selectedRadius}
+        >
+          <title>{formatTooltip(d.species)}</title>
+        </circle>
+      ) : null}
+    </g>
   ))
 
   return (
