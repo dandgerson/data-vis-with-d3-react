@@ -45,7 +45,7 @@ const developmentConfig = merge([
 /**
  * Alternate way to get the mode value
  *
- * const mode = process.argv[process.argv.indexOf('--mode') + 1]
+ * const mode = process.argv[process.argv.indexOf('--mode`') + 1]
  */
 const getConfig = mode => {
   switch (mode) {
