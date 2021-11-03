@@ -97,14 +97,15 @@ const ScatterPlot = () => {
   }
 
   const [hoveredValue, setHoveredValue] = useState('')
+  const [selectedValue, setSelectedValue] = useState('')
 
   const getXValue = d => d[selectedX]
   const getYValue = d => d[selectedY]
   const getColorValue = d => d.species
 
   const filteredData = useMemo(
-    () => data.filter(d => hoveredValue === getColorValue(d)),
-    [hoveredValue],
+    () => data.filter(d => [hoveredValue, selectedValue].includes(getColorValue(d))),
+    [hoveredValue, selectedValue],
   )
 
   const formatNumberValue = format('.2s')
@@ -168,7 +169,7 @@ const ScatterPlot = () => {
     </g>
   ))
 
-  console.log({ hoveredValue })
+  console.log({ hoveredValue, selectedValue })
 
   const renderLegend = ({ colorScale }) => colorScale.domain().map((domainValue, i) => (
     <g
@@ -178,7 +179,12 @@ const ScatterPlot = () => {
       transform={`translate(0,${i * c.legend.tick.spacing})`}
       onMouseEnter={() => setHoveredValue(domainValue)}
       onMouseLeave={() => setHoveredValue('')}
-      opacity={hoveredValue === domainValue || !hoveredValue ? 1 : c.marks.opacity}
+      onClick={() => (selectedValue === domainValue ? setSelectedValue('') : setSelectedValue(domainValue))}
+      opacity={
+          [hoveredValue, selectedValue].includes(domainValue) || (!hoveredValue && !selectedValue)
+            ? 1
+            : c.marks.opacity
+        }
     >
       <circle fill={colorScale(domainValue)} r={c.legend.tick.radius} />
       <text x={15} dy={c.legend.tick.dy}>{`- ${formatTooltip(domainValue)}`}</text>
@@ -331,7 +337,7 @@ const ScatterPlot = () => {
               })}
             </g>
 
-            <g data-marks opacity={hoveredValue ? c.marks.opacity : 1}>
+            <g data-marks opacity={hoveredValue || selectedValue ? c.marks.opacity : 1}>
               {renderMarks({
                 data,
                 xScale: d3Props.xScale,
