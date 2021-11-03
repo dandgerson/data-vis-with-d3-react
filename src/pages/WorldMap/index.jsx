@@ -1,14 +1,29 @@
 /* eslint-disable no-shadow */
-import React from 'react'
-import { Switch, Route, useRouteMatch } from 'react-router-dom'
+import React, { useMemo } from 'react'
 
-import Nav from 'components/Nav'
 import routes from 'routes'
-import Azimuthal from 'pages/WorldMap/Azimuthal'
+import { useDropDown } from 'components/DropDown'
 
 const WorldMap = () => {
   const worldMapRoutes = routes.find(route => route.path === '/world-map').routes
-  const { path } = useRouteMatch()
+
+  const options = worldMapRoutes
+    .filter(route => route.path !== '*')
+    .map(route => ({
+      value: route.path,
+      label: route.title,
+    }))
+
+  const [dropDownProjection, selectedProjection] = useDropDown({
+    id: 'projections',
+    label: 'Choose Projection: ',
+    options,
+  })
+
+  const projection = useMemo(
+    () => worldMapRoutes.find(route => route.path === selectedProjection),
+    [selectedProjection],
+  )
 
   return (
     <div
@@ -24,9 +39,8 @@ const WorldMap = () => {
       >
         <h2>World Map</h2>
         <br />
-        <h2>Projections:</h2>
 
-        <Nav routes={worldMapRoutes} isColumn isSubNav />
+        {dropDownProjection}
       </div>
 
       <div className='separator-v'>
@@ -36,33 +50,13 @@ const WorldMap = () => {
       <div
         style={{
           display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
           flex: 1,
         }}
       >
-        <Switch>
-          <Route
-            exact
-            path={path}
-            render={() => (
-              <div
-                style={{
-                  flex: 1,
-                }}
-              >
-                <Azimuthal />
-              </div>
-            )}
-          />
-
-          {worldMapRoutes.map(route => (
-            <Route
-              key={route.id}
-              exact={route.isExact}
-              path={`${path}${route.path}`}
-              render={route.render}
-            />
-          ))}
-        </Switch>
+        <h2>{projection.title}</h2>
+        {projection.render()}
       </div>
     </div>
   )
