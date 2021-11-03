@@ -31,6 +31,8 @@
 }
 
 .legendItem {
+  cursor: pointer;
+
   circle {
     stroke: rgba($color-light, 0.5);
   }
