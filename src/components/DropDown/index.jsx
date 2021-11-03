@@ -4,12 +4,16 @@ import PropTypes from 'prop-types'
 // import s from './DropDown.m.scss'
 
 const DropDown = ({
-  label, options, id, setSelectedValue,
+  label, options, id, selectedValue, setSelectedValue,
 }) => (
   <div>
     {label ? <label htmlFor={id}>{label}</label> : null}
 
-    <select id={id} onChange={event => setSelectedValue(event.target.value)}>
+    <select
+      id={id}
+      value={selectedValue}
+      onChange={event => setSelectedValue(event.target.value)}
+    >
       {options.map(option => (
         <option key={option.value} value={option.value}>
           {option.label}
@@ -27,6 +31,7 @@ DropDown.propTypes = {
   label: PropTypes.string,
   id: PropTypes.string.isRequired,
   options: PropTypes.array.isRequired,
+  selectedValue: PropTypes.string.isRequired,
   setSelectedValue: PropTypes.func.isRequired,
 }
 
@@ -36,7 +41,13 @@ export const useDropDown = ({ label, options, id }) => {
   const [selectedValue, setSelectedValue] = useState(options[0].value)
 
   return [
-    <DropDown label={label} options={options} id={id} setSelectedValue={setSelectedValue} />,
+    <DropDown
+      label={label}
+      options={options}
+      id={id}
+      selectedValue={selectedValue}
+      setSelectedValue={setSelectedValue}
+    />,
     selectedValue,
   ]
 }
