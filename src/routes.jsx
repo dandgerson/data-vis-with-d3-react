@@ -97,7 +97,7 @@ const routes = [
   {
     id: 11,
     path: '/world-map',
-    title: 'World Map',
+    title: 'World Cities Map',
     isExact: false,
     isNavItem: true,
     render: () => <WorldMap map='cities' />,
