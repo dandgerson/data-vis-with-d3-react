@@ -10,38 +10,17 @@ import Histogram from './Histogram'
 const MissingMigrants = () => {
   const [data] = useCsv(
     'https://gist.githubusercontent.com/dandgerson/0e0b9478a72c23a60f3622efd6300338/raw/missing_migrants.csv',
-  )
-
-  const { mapData, histogramData } = useMemo(() => {
-    if (data.length === 0) {
-      return {
-        mapData: [],
-        histogramData: [],
-      }
-    }
-
-    const mapData = data.map(d => {
+    d => {
       const [lat, lng] = d['Location Coordinates'].split(',').map(d => +d)
 
       return {
-        ...d,
         lat,
         lng,
         totalDeadAndMissing: +d['Total Dead and Missing'],
+        reportedDate: new Date(d['Reported Date']),
       }
-    })
-
-    const histogramData = data.map(d => ({
-      ...d,
-      reportedDate: new Date(d['Reported Date']),
-      totalDeathAndMissing: +d['Total Dead and Missing'],
-    }))
-
-    return {
-      mapData,
-      histogramData,
-    }
-  }, [data])
+    },
+  )
 
   const options = useMemo(
     () => [
@@ -101,6 +80,20 @@ const MissingMigrants = () => {
     [size],
   )
 
+  const [brushExtent, setBrushExtent] = useState(null)
+
+  console.log({ brushExtent, data })
+
+  const getXValue = d => d.reportedDate
+
+  const filteredData = brushExtent
+    ? data.filter(d => {
+      const date = getXValue(d)
+
+      return date > brushExtent[0] && date < brushExtent[1]
+    })
+    : data
+
   return (
     <div
       style={{
@@ -142,11 +135,13 @@ const MissingMigrants = () => {
         >
           {size.svgHeight && data.length > 0 ? (
             <>
-              <Map projection={selectedProjection.projection} size={size} data={mapData} />
+              <Map projection={selectedProjection.projection} size={size} data={filteredData} />
 
               <g transform={`translate(${histogram.xPos},${histogram.yPos})`}>
                 <Histogram
-                  data={histogramData}
+                  data={data}
+                  setBrushExtent={setBrushExtent}
+                  getXValue={getXValue}
                   size={{
                     height: histogram.height,
                     width: histogram.width,

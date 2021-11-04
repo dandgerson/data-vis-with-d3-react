@@ -1,16 +1,22 @@
 /* eslint-disable no-shadow */
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import {
-  scaleLinear, scaleTime, timeFormat, extent, bin, timeMonths, sum, max,
+  scaleLinear,
+  scaleTime,
+  timeFormat,
+  extent,
+  bin,
+  timeMonths,
+  sum,
+  max,
+  brushX,
+  select,
 } from 'd3'
 
 import s from './Histogram.m.scss'
 
 const c = {
-  margin: {
-    left: 60,
-  },
   axis: {
     x: {
       dy: '.71em',
@@ -37,9 +43,10 @@ const c = {
   },
 }
 
-const Histogram = ({ data, size }) => {
-  const getXValue = d => d.reportedDate
-  const getYValue = d => d.totalDeathAndMissing
+const Histogram = ({
+  data, size, setBrushExtent, getXValue,
+}) => {
+  const getYValue = d => d.totalDeadAndMissing
 
   const xScale = scaleTime().domain(extent(data, getXValue)).range([0, size.width]).nice()
 
@@ -51,10 +58,8 @@ const Histogram = ({ data, size }) => {
       .domain(xScale.domain())
       .thresholds(timeMonths(start, stop))(data)
 
-    console.log({ binnedData })
-
     const processedData = binnedData.map(monthDataSet => ({
-      totalDeathAndMissingByMonth: sum(monthDataSet, getYValue),
+      totalDeadAndMissingByMonth: sum(monthDataSet, getYValue),
       x0: monthDataSet.x0,
       x1: monthDataSet.x1,
     }))
@@ -62,10 +67,8 @@ const Histogram = ({ data, size }) => {
     return processedData
   }, [data])
 
-  console.log({ processedData })
-
   const getXProcessedValue = d => d.x0
-  const getYProcessedValue = d => d.totalDeathAndMissingByMonth
+  const getYProcessedValue = d => d.totalDeadAndMissingByMonth
 
   const yScale = scaleLinear()
     .domain([0, max(processedData, getYProcessedValue)])
@@ -115,6 +118,20 @@ const Histogram = ({ data, size }) => {
     </g>
   )
 
+  useEffect(() => {
+    const brushSelection = select(document.querySelector('[data-brush]'))
+    const brush = brushX().extent([
+      [0, 0],
+      [size.width, size.height],
+    ])
+    brush(brushSelection)
+    brush.on('brush end', ({ selection }) => {
+      setBrushExtent(selection?.map(d => xScale.invert(d)))
+    })
+
+    console.log({ brushSelection })
+  }, [data])
+
   return (
     <g data-histogram>
       <rect className={s.substrate} width={size.width} height={size.height} />
@@ -163,6 +180,8 @@ const Histogram = ({ data, size }) => {
           formatTooltip,
         })}
       </g>
+
+      <g data-brush />
     </g>
   )
 }
@@ -170,6 +189,8 @@ const Histogram = ({ data, size }) => {
 Histogram.propTypes = {
   data: PropTypes.array.isRequired,
   size: PropTypes.object.isRequired,
+  getXValue: PropTypes.func.isRequired,
+  setBrushExtent: PropTypes.func.isRequired,
 }
 
 export default Histogram
