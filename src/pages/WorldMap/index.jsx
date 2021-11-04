@@ -40,7 +40,7 @@ const WorldMap = () => {
           width: '20%',
         }}
       >
-        <h2>World Map</h2>
+        <h2>World Map!</h2>
         <br />
 
         {dropDownProjection}

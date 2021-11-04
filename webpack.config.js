@@ -34,7 +34,14 @@ const commonConfig = merge([
   parts.loadFonts(),
 ])
 
-const productionConfig = merge([parts.eliminateUnusedCss()])
+const productionConfig = merge([
+  {
+    performance: {
+      hints: false,
+    },
+  },
+  // parts.eliminateUnusedCss(),
+])
 
 const developmentConfig = merge([
   {
