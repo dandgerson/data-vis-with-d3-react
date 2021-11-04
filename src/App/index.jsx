@@ -9,7 +9,7 @@ import Footer from './Footer'
 import s from './App.m.scss'
 
 const App = () => (
-  <BrowserRouter basename={process.env.PUBLIC_URL}>
+  <BrowserRouter>
     <div className={cl(s.root)}>
       <div className={s.header}>
         <Header />
