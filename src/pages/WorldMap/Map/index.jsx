@@ -1,7 +1,9 @@
 /* eslint-disable no-shadow */
 import React, { useMemo, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { geoPath, geoGraticule } from 'd3'
+import {
+  geoPath, geoGraticule, scaleSqrt, extent, format,
+} from 'd3'
 import { feature, mesh } from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
 import useCsv from 'hooks/useCsv'
@@ -32,10 +34,21 @@ const Map = ({ projection }) => {
       population: +d.population,
     }),
   )
-  console.log({ citiesData })
+
+  const c = {
+    pos: {
+      xOffset: -230,
+      zero: -250,
+      scale: 1.8,
+    },
+    cities: {
+      minPopulation: 500000,
+      size: [0.5, 3],
+    },
+  }
 
   const filteredCitiesData = useMemo(
-    () => citiesData.filter(d => d.population >= 500000),
+    () => citiesData.filter(d => d.population >= c.cities.minPopulation),
     [citiesData],
   )
 
@@ -50,19 +63,20 @@ const Map = ({ projection }) => {
     })
   }, [])
 
-  const pos = {
-    xOffset: -230,
-    zero: -250,
-    scale: 1.8,
-  }
+  const formatNumberValue = format('.2s')
+  const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
+  const getSizeValue = d => d.population
+  const sizeScale = scaleSqrt()
+    .domain(extent(filteredCitiesData, getSizeValue))
+    .range(c.cities.size)
 
   const renderMarks = ({ mapData, citiesData }) => (
     <g
       data-marks
       className={s.marks}
-      transform={`translate(${(pos.xOffset + pos.zero) * pos.scale + size.svgWidth / 2},${
-        pos.zero * pos.scale + size.svgHeight / 2
-      }) scale(${pos.scale})`}
+      transform={`translate(${(c.pos.xOffset + c.pos.zero) * c.pos.scale + size.svgWidth / 2},${
+        c.pos.zero * c.pos.scale + size.svgHeight / 2
+      }) scale(${c.pos.scale})`}
     >
       <path className={s.marks_sphere} d={path({ type: 'Sphere' })} />
 
@@ -78,8 +92,8 @@ const Map = ({ projection }) => {
         const [x, y] = projection([d.lng, d.lat])
 
         return (
-          <circle key={i} cx={x} cy={y} r={1} className={s.marks_city}>
-            <title>{d.city}</title>
+          <circle key={i} cx={x} cy={y} r={sizeScale(getSizeValue(d))} className={s.marks_city}>
+            <title>{`${d.city}: ${formatTooltipValue(d.population)}`}</title>
           </circle>
         )
       })}
