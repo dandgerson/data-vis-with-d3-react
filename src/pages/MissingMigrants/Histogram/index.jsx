@@ -1,16 +1,22 @@
 /* eslint-disable no-shadow */
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import {
-  scaleLinear, scaleTime, timeFormat, extent, bin, timeMonths, sum, max,
+  scaleLinear,
+  scaleTime,
+  timeFormat,
+  extent,
+  bin,
+  timeMonths,
+  sum,
+  max,
+  brushX,
+  select,
 } from 'd3'
 
 import s from './Histogram.m.scss'
 
 const c = {
-  margin: {
-    left: 60,
-  },
   axis: {
     x: {
       dy: '.71em',
@@ -51,8 +57,6 @@ const Histogram = ({ data, size }) => {
       .domain(xScale.domain())
       .thresholds(timeMonths(start, stop))(data)
 
-    console.log({ binnedData })
-
     const processedData = binnedData.map(monthDataSet => ({
       totalDeathAndMissingByMonth: sum(monthDataSet, getYValue),
       x0: monthDataSet.x0,
@@ -61,8 +65,6 @@ const Histogram = ({ data, size }) => {
 
     return processedData
   }, [data])
-
-  console.log({ processedData })
 
   const getXProcessedValue = d => d.x0
   const getYProcessedValue = d => d.totalDeathAndMissingByMonth
@@ -115,6 +117,17 @@ const Histogram = ({ data, size }) => {
     </g>
   )
 
+  useEffect(() => {
+    const brushSelection = select(document.querySelector('[data-brush]'))
+    const brush = brushX().extent([
+      [0, 0],
+      [size.width, size.height],
+    ])
+    brush(brushSelection)
+
+    console.log({ brushSelection })
+  }, [])
+
   return (
     <g data-histogram>
       <rect className={s.substrate} width={size.width} height={size.height} />
@@ -163,6 +176,8 @@ const Histogram = ({ data, size }) => {
           formatTooltip,
         })}
       </g>
+
+      <g data-brush />
     </g>
   )
 }
