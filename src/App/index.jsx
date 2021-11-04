@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { HashRouter, Switch, Route } from 'react-router-dom'
 import cl from 'clsx'
 
 import routes from 'routes'
@@ -9,7 +9,7 @@ import Footer from './Footer'
 import s from './App.m.scss'
 
 const App = () => (
-  <BrowserRouter basename='/'>
+  <HashRouter basename='/'>
     <div className={cl(s.root)}>
       <div className={s.header}>
         <Header />
@@ -27,7 +27,7 @@ const App = () => (
         <Footer />
       </div>
     </div>
-  </BrowserRouter>
+  </HashRouter>
 )
 
 export default App
