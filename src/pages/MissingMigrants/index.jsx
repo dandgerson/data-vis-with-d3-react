@@ -5,12 +5,49 @@ import {
   scaleLinear,
   scaleTime,
   timeFormat,
-  format,
+  // format,
   extent,
+  bin,
+  timeMonths,
+  sum,
+  max,
   // line, curveNatural,
 } from 'd3'
 
 import s from './LineChart.m.scss'
+
+const c = {
+  margin: {
+    top: 20,
+    right: 20,
+    bottom: 70,
+    left: 100,
+  },
+  axis: {
+    x: {
+      dy: '.71em',
+      yOffset: 15,
+      label: {
+        yOffset: 40,
+      },
+    },
+    y: {
+      dy: '.32em',
+      xOffset: 8,
+      label: {
+        xOffset: 50,
+      },
+    },
+  },
+  marks: {
+    circle: {
+      radius: 2,
+    },
+    line: {
+      strokeWidth: 2,
+    },
+  },
+}
 
 const MissingMigrants = () => {
   const [data] = useCsv(
@@ -22,53 +59,9 @@ const MissingMigrants = () => {
     }),
   )
 
-  console.log({
-    data,
-  })
+  console.log({ data })
 
-  const c = {
-    margin: {
-      top: 20,
-      right: 20,
-      bottom: 70,
-      left: 100,
-    },
-    axis: {
-      x: {
-        dy: '.71em',
-        yOffset: 15,
-        label: {
-          yOffset: 40,
-        },
-      },
-      y: {
-        dy: '.32em',
-        xOffset: 8,
-        label: {
-          xOffset: 50,
-        },
-      },
-    },
-    marks: {
-      circle: {
-        radius: 2,
-      },
-      line: {
-        strokeWidth: 2,
-      },
-    },
-  }
-
-  const getXValue = d => d.reportedDate
-  const xAxisLabel = 'Reported Date'
-
-  const getYValue = d => d.totalDeathAndMissing
-  const yAxisLabel = 'Total Death and Missing'
-
-  const formatTick = timeFormat('%m/%d/%Y')
-  const formatTooltip = tickValue => `${format('.4s')(tickValue)} C°`
-
-  const svgContainerProps = useMemo(() => {
+  const svgSize = useMemo(() => {
     const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
     const width = svgRect?.width || 0
     const height = svgRect?.height || 0
@@ -79,19 +72,45 @@ const MissingMigrants = () => {
     }
   }, [data])
 
-  const d3Props = useMemo(
-    () => ({
-      xScale: scaleTime()
-        .domain(extent(data, getXValue))
-        .range([0, svgContainerProps.innerWidth])
-        .nice(),
-      yScale: scaleLinear()
-        .domain(extent(data, getYValue))
-        .range([svgContainerProps.innerHeight, 0])
-        .nice(),
-    }),
-    [data],
-  )
+  const getXValue = d => d.reportedDate
+  const getYValue = d => d.totalDeathAndMissing
+
+  const xScale = scaleTime().domain(extent(data, getXValue)).range([0, svgSize.innerWidth]).nice()
+
+  const [start, stop] = xScale.domain()
+
+  const processedData = useMemo(() => {
+    const binnedData = bin()
+      .value(getXValue)
+      .domain(xScale.domain())
+      .thresholds(timeMonths(start, stop))(data)
+
+    console.log({ binnedData })
+
+    const processedData = binnedData.map(monthDataSet => ({
+      totalDeathAndMissingByMonth: sum(monthDataSet, getYValue),
+      x0: monthDataSet.x0,
+      x1: monthDataSet.x1,
+    }))
+
+    return processedData
+  }, [data])
+
+  console.log({ processedData })
+
+  const getXProcessedValue = d => d.x0
+  const getYProcessedValue = d => d.totalDeathAndMissingByMonth
+
+  const yScale = scaleLinear()
+    .domain([0, max(processedData, getYProcessedValue)])
+    .range([svgSize.innerHeight, 0])
+    .nice()
+
+  const xAxisLabel = 'Reported Date'
+  const yAxisLabel = 'Total Death and Missing By Month'
+
+  const formatTick = timeFormat('%m/%d/%Y')
+  const formatTooltip = value => value
 
   const renderAxisBottom = ({ xScale, height, formatTick }) => xScale.ticks().map(tickValue => (
     <g key={tickValue} transform={`translate(${xScale(tickValue)},0)`}>
@@ -131,15 +150,16 @@ const MissingMigrants = () => {
       /> */}
 
       {data.map((d, i) => (
-        <circle
+        <rect
           key={i}
           className={s.marks_circle}
-          cx={xScale(getXValue(d))}
-          cy={yScale(getYValue(d))}
-          r={c.marks.circle.radius}
+          x={xScale(getXValue(d))}
+          y={yScale(getYValue(d))}
+          width={xScale(d.x1) - xScale(d.x0)}
+          height={svgSize.innerHeight - yScale(getYValue(d))}
         >
           <title>{formatTooltip(getYValue(d))}</title>
-        </circle>
+        </rect>
       ))}
     </g>
   )
@@ -181,15 +201,15 @@ const MissingMigrants = () => {
           <g transform={`translate(${c.margin.left},${c.margin.top})`}>
             <g data-axis-bottom>
               {renderAxisBottom({
-                xScale: d3Props.xScale,
-                height: svgContainerProps.innerHeight,
+                xScale,
+                height: svgSize.innerHeight,
                 formatTick,
               })}
 
               <text
                 className={s.axisLabel}
-                x={svgContainerProps.innerWidth / 2}
-                y={svgContainerProps.innerHeight + c.axis.x.label.yOffset}
+                x={svgSize.innerWidth / 2}
+                y={svgSize.innerHeight + c.axis.x.label.yOffset}
                 dy={c.axis.x.dy}
                 textAnchor='middle'
               >
@@ -199,8 +219,8 @@ const MissingMigrants = () => {
 
             <g data-axis-left>
               {renderAxisLeft({
-                yScale: d3Props.yScale,
-                width: svgContainerProps.innerWidth,
+                yScale,
+                width: svgSize.innerWidth,
                 formatTick,
               })}
 
@@ -208,7 +228,7 @@ const MissingMigrants = () => {
                 className={s.axisLabel}
                 textAnchor='middle'
                 transform={`translate(${-c.axis.y.label.xOffset},${
-                  svgContainerProps.innerHeight / 2
+                  svgSize.innerHeight / 2
                 }) rotate(-90)`}
               >
                 {yAxisLabel}
@@ -217,11 +237,11 @@ const MissingMigrants = () => {
 
             <g data-marks>
               {renderMarks({
-                data,
-                xScale: d3Props.xScale,
-                yScale: d3Props.yScale,
-                getYValue,
-                getXValue,
+                data: processedData,
+                xScale,
+                yScale,
+                getYValue: getYProcessedValue,
+                getXValue: getXProcessedValue,
                 formatTooltip,
               })}
             </g>
