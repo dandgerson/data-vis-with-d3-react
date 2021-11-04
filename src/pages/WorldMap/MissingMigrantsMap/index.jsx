@@ -48,7 +48,7 @@ const Map = ({ projection }) => {
       scale: 1.8,
     },
     circle: {
-      size: [0.5, 3.5],
+      size: [0.5, 5],
     },
   }
 
