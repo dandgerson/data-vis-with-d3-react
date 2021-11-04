@@ -6,11 +6,10 @@ import {
 } from 'd3'
 import { feature, mesh } from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
-import useCsv from 'hooks/useCsv'
 
-import s from './MissingMigrantsMap.m.scss'
+import s from './Map.m.scss'
 
-const Map = ({ projection }) => {
+const Map = ({ projection, data }) => {
   const { path, graticule, mapData } = useMemo(() => {
     const path = geoPath(projection)
     const graticule = geoGraticule()
@@ -24,22 +23,6 @@ const Map = ({ projection }) => {
       },
     }
   }, [projection])
-
-  const [migrantsData] = useCsv(
-    'https://gist.githubusercontent.com/dandgerson/0e0b9478a72c23a60f3622efd6300338/raw/missing_migrants.csv',
-    d => {
-      const [lat, lng] = d['Location Coordinates'].split(',').map(d => +d)
-
-      return {
-        ...d,
-        lat,
-        lng,
-        totalDeadAndMissing: +d['Total Dead and Missing'],
-      }
-    },
-  )
-
-  console.log({ migrantsData })
 
   const c = {
     pos: {
@@ -66,7 +49,7 @@ const Map = ({ projection }) => {
   const formatNumberValue = format('.2s')
   const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
   const getSizeValue = d => d.totalDeadAndMissing
-  const sizeScale = scaleSqrt().domain(extent(migrantsData, getSizeValue)).range(c.circle.size)
+  const sizeScale = scaleSqrt().domain(extent(data, getSizeValue)).range(c.circle.size)
 
   const renderMarks = ({ mapData, migrantsData }) => (
     <g
@@ -106,10 +89,10 @@ const Map = ({ projection }) => {
         height: '100%',
       }}
     >
-      {size.svgHeight && migrantsData.length > 0
+      {size.svgHeight && data.length > 0
         ? renderMarks({
           mapData,
-          migrantsData,
+          migrantsData: data,
         })
         : null}
     </svg>
@@ -118,6 +101,7 @@ const Map = ({ projection }) => {
 
 Map.propTypes = {
   projection: PropTypes.func.isRequired,
+  data: PropTypes.array.isRequired,
 }
 
 export default Map

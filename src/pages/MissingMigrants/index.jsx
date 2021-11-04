@@ -2,10 +2,47 @@
 import React, { useMemo } from 'react'
 import { geoAzimuthalEquidistant, geoEqualEarth } from 'd3'
 
+import useCsv from 'hooks/useCsv'
 import { useDropDown } from 'components/DropDown'
-import MissingMigrantsMap from './MissingMigrantsMap'
+import Map from './Map'
+import Histogram from './Histogram'
 
 const MissingMigrants = () => {
+  const [data] = useCsv(
+    'https://gist.githubusercontent.com/dandgerson/0e0b9478a72c23a60f3622efd6300338/raw/missing_migrants.csv',
+  )
+
+  const { mapData, histogramData } = useMemo(() => {
+    if (data.length === 0) {
+      return {
+        mapData: [],
+        histogramData: [],
+      }
+    }
+
+    const mapData = data.map(d => {
+      const [lat, lng] = d['Location Coordinates'].split(',').map(d => +d)
+
+      return {
+        ...d,
+        lat,
+        lng,
+        totalDeadAndMissing: +d['Total Dead and Missing'],
+      }
+    })
+
+    const histogramData = data.map(d => ({
+      ...d,
+      reportedDate: new Date(d['Reported Date']),
+      totalDeathAndMissing: +d['Total Dead and Missing'],
+    }))
+
+    return {
+      mapData,
+      histogramData,
+    }
+  }, [data])
+
   const options = useMemo(
     () => [
       {
@@ -60,7 +97,9 @@ const MissingMigrants = () => {
       >
         <h2>{selectedProjection.label}</h2>
 
-        <MissingMigrantsMap projection={selectedProjection.projection} />
+        <Map projection={selectedProjection.projection} data={mapData} />
+
+        <Histogram data={histogramData} />
       </div>
     </div>
   )

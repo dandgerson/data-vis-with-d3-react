@@ -1,20 +1,11 @@
 /* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
-import useCsv from 'hooks/useCsv'
+import PropTypes from 'prop-types'
 import {
-  scaleLinear,
-  scaleTime,
-  timeFormat,
-  // format,
-  extent,
-  bin,
-  timeMonths,
-  sum,
-  max,
-  // line, curveNatural,
+  scaleLinear, scaleTime, timeFormat, extent, bin, timeMonths, sum, max,
 } from 'd3'
 
-import s from './MissingMigrantsHistogram.m.scss'
+import s from './Histogram.m.scss'
 
 const c = {
   margin: {
@@ -49,18 +40,7 @@ const c = {
   },
 }
 
-const MissingMigrantsHistogram = () => {
-  const [data] = useCsv(
-    'https://gist.githubusercontent.com/dandgerson/0e0b9478a72c23a60f3622efd6300338/raw/missing_migrants.csv',
-    d => ({
-      ...d,
-      reportedDate: new Date(d['Reported Date']),
-      totalDeathAndMissing: +d['Total Dead and Missing'],
-    }),
-  )
-
-  console.log({ data })
-
+const Histogram = ({ data }) => {
   const svgSize = useMemo(() => {
     const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
     const width = svgRect?.width || 0
@@ -140,15 +120,6 @@ const MissingMigrantsHistogram = () => {
     data, yScale, xScale, getYValue, getXValue, formatTooltip,
   }) => (
     <g className={s.renderMarks}>
-      {/* <path
-        className={s.marks_line}
-        strokeWidth={c.marks.line.strokeWidth}
-        d={line()
-          .curve(curveNatural)
-          .x(d => xScale(getXValue(d)))
-          .y(d => yScale(getYValue(d)))(data)}
-      /> */}
-
       {data.map((d, i) => (
         <rect
           key={i}
@@ -165,93 +136,69 @@ const MissingMigrantsHistogram = () => {
   )
 
   return (
-    <div
+    <svg
+      data-svg-container
       style={{
-        display: 'flex',
+        width: '100%',
         height: '100%',
       }}
     >
-      <div
-        style={{
-          width: '20%',
-        }}
-      >
-        <h2>Line Chart</h2>
-        <br />
-        <h2>The Week Temperature dataset</h2>
-        <p>The Week Temperature dataset of San Francisco</p>
-      </div>
+      {processedData.length > 1 ? (
+        <g transform={`translate(${c.margin.left},${c.margin.top})`}>
+          <g data-axis-bottom>
+            {renderAxisBottom({
+              xScale,
+              height: svgSize.innerHeight,
+              formatTick,
+            })}
 
-      <div className='separator-v'>
-        <div />
-      </div>
+            <text
+              className={s.axisLabel}
+              x={svgSize.innerWidth / 2}
+              y={svgSize.innerHeight + c.axis.x.label.yOffset}
+              dy={c.axis.x.dy}
+              textAnchor='middle'
+            >
+              {xAxisLabel}
+            </text>
+          </g>
 
-      <div
-        style={{
-          flex: 1,
-        }}
-      >
-        <svg
-          data-svg-container
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-        >
-          {processedData.length > 1 ? (
-            <g transform={`translate(${c.margin.left},${c.margin.top})`}>
-              <g data-axis-bottom>
-                {renderAxisBottom({
-                  xScale,
-                  height: svgSize.innerHeight,
-                  formatTick,
-                })}
+          <g data-axis-left>
+            {renderAxisLeft({
+              yScale,
+              width: svgSize.innerWidth,
+              formatTick,
+            })}
 
-                <text
-                  className={s.axisLabel}
-                  x={svgSize.innerWidth / 2}
-                  y={svgSize.innerHeight + c.axis.x.label.yOffset}
-                  dy={c.axis.x.dy}
-                  textAnchor='middle'
-                >
-                  {xAxisLabel}
-                </text>
-              </g>
+            <text
+              className={s.axisLabel}
+              textAnchor='middle'
+              transform={`translate(${-c.axis.y.label.xOffset},${
+                svgSize.innerHeight / 2
+              }) rotate(-90)`}
+            >
+              {yAxisLabel}
+            </text>
+          </g>
 
-              <g data-axis-left>
-                {renderAxisLeft({
-                  yScale,
-                  width: svgSize.innerWidth,
-                  formatTick,
-                })}
-
-                <text
-                  className={s.axisLabel}
-                  textAnchor='middle'
-                  transform={`translate(${-c.axis.y.label.xOffset},${
-                    svgSize.innerHeight / 2
-                  }) rotate(-90)`}
-                >
-                  {yAxisLabel}
-                </text>
-              </g>
-
-              <g data-marks>
-                {renderMarks({
-                  data: processedData,
-                  xScale,
-                  yScale,
-                  getYValue: getYProcessedValue,
-                  getXValue: getXProcessedValue,
-                  formatTooltip,
-                })}
-              </g>
-            </g>
-          ) : null}
-        </svg>
-      </div>
-    </div>
+          <g data-marks>
+            {renderMarks({
+              data: processedData,
+              xScale,
+              yScale,
+              getYValue: getYProcessedValue,
+              getXValue: getXProcessedValue,
+              formatTooltip,
+            })}
+          </g>
+        </g>
+      ) : null}
+    </svg>
   )
 }
 
-export default MissingMigrantsHistogram
+Histogram.propTypes = {
+  data: PropTypes.array.isRequired,
+}
+
+export default Histogram
