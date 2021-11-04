@@ -1,0 +1,22 @@
+@import 'styles/variables';
+
+.marks {
+  &_land {
+    fill: rgba($color-accent, 0.15);
+  }
+  &_sphere {
+    fill: rgba($color-accent, 0.05);
+  }
+  &_interiors {
+    fill: none;
+    stroke: rgba($color-accent, 0.2);
+  }
+  &_graticules {
+    fill: none;
+    stroke: rgba($color-accent, 0.05);
+  }
+  &_circle {
+    fill: rgba($color-accent, 0.4);
+    // stroke: rgba($color-accent, 0.5);
+  }
+}
