@@ -43,9 +43,10 @@ const c = {
   },
 }
 
-const Histogram = ({ data, size }) => {
-  const getXValue = d => d.reportedDate
-  const getYValue = d => d.totalDeathAndMissing
+const Histogram = ({
+  data, size, setBrushExtent, getXValue,
+}) => {
+  const getYValue = d => d.totalDeadAndMissing
 
   const xScale = scaleTime().domain(extent(data, getXValue)).range([0, size.width]).nice()
 
@@ -58,7 +59,7 @@ const Histogram = ({ data, size }) => {
       .thresholds(timeMonths(start, stop))(data)
 
     const processedData = binnedData.map(monthDataSet => ({
-      totalDeathAndMissingByMonth: sum(monthDataSet, getYValue),
+      totalDeadAndMissingByMonth: sum(monthDataSet, getYValue),
       x0: monthDataSet.x0,
       x1: monthDataSet.x1,
     }))
@@ -67,7 +68,7 @@ const Histogram = ({ data, size }) => {
   }, [data])
 
   const getXProcessedValue = d => d.x0
-  const getYProcessedValue = d => d.totalDeathAndMissingByMonth
+  const getYProcessedValue = d => d.totalDeadAndMissingByMonth
 
   const yScale = scaleLinear()
     .domain([0, max(processedData, getYProcessedValue)])
@@ -124,9 +125,12 @@ const Histogram = ({ data, size }) => {
       [size.width, size.height],
     ])
     brush(brushSelection)
+    brush.on('brush end', ({ selection }) => {
+      setBrushExtent(selection?.map(d => xScale.invert(d)))
+    })
 
     console.log({ brushSelection })
-  }, [])
+  }, [data])
 
   return (
     <g data-histogram>
@@ -185,6 +189,8 @@ const Histogram = ({ data, size }) => {
 Histogram.propTypes = {
   data: PropTypes.array.isRequired,
   size: PropTypes.object.isRequired,
+  getXValue: PropTypes.func.isRequired,
+  setBrushExtent: PropTypes.func.isRequired,
 }
 
 export default Histogram
