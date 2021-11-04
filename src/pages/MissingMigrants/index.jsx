@@ -7,6 +7,8 @@ import { useDropDown } from 'components/DropDown'
 import Map from './Map'
 import Histogram from './Histogram'
 
+const getXValue = d => d.reportedDate
+
 const MissingMigrants = () => {
   const [data] = useCsv(
     'https://gist.githubusercontent.com/dandgerson/0e0b9478a72c23a60f3622efd6300338/raw/missing_migrants.csv',
@@ -81,8 +83,6 @@ const MissingMigrants = () => {
   )
 
   const [brushExtent, setBrushExtent] = useState(null)
-
-  const getXValue = d => d.reportedDate
 
   const filteredData = brushExtent
     ? data.filter(d => {

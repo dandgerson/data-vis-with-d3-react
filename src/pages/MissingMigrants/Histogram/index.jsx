@@ -44,20 +44,19 @@ const c = {
 }
 
 const formatTick = timeFormat('%m/%d/%Y')
+const getYValue = d => d.totalDeadAndMissing
 
 const Histogram = ({
   data, size, setBrushExtent, getXValue,
 }) => {
-  const getYValue = d => d.totalDeadAndMissing
-
   const xScale = useMemo(
     () => scaleTime().domain(extent(data, getXValue)).range([0, size.width]).nice(),
     [data, getXValue, size.width],
   )
 
-  const [start, stop] = xScale.domain()
-
   const processedData = useMemo(() => {
+    const [start, stop] = xScale.domain()
+
     const binnedData = bin()
       .value(getXValue)
       .domain(xScale.domain())
