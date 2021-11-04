@@ -75,10 +75,13 @@ const Histogram = ({
   const getXProcessedValue = d => d.x0
   const getYProcessedValue = d => d.totalDeadAndMissingByMonth
 
-  const yScale = scaleLinear()
-    .domain([0, max(processedData, getYProcessedValue)])
-    .range([size.height, 0])
-    .nice()
+  const yScale = useMemo(
+    () => scaleLinear()
+      .domain([0, max(processedData, getYProcessedValue)])
+      .range([size.height, 0])
+      .nice(),
+    [processedData],
+  )
 
   const xAxisLabel = 'Reported Date'
   const yAxisLabel = 'Dead and Missing By Month'
