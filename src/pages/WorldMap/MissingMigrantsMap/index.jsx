@@ -8,7 +8,7 @@ import { feature, mesh } from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
 import useCsv from 'hooks/useCsv'
 
-import s from './Map.m.scss'
+import s from './MissingMigrantsMap.m.scss'
 
 const Map = ({ projection }) => {
   const { path, graticule, mapData } = useMemo(() => {
