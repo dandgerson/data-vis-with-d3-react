@@ -13,6 +13,7 @@ import LineChart from 'pages/LineChart'
 import Page404 from 'pages/Page404'
 import WorldMap from 'pages/WorldMap'
 import MissingMigrantsHistogram from 'pages/MissingMigrantsHistogram'
+import MissingMigrants from 'pages/MissingMigrants'
 
 const route404 = {
   id: 0,
@@ -67,7 +68,7 @@ const routes = [
     path: '/loading-data-with-react',
     title: 'Loading Data with React',
     isExact: false,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <LoadingDataWithReact />,
   },
   {
@@ -97,7 +98,7 @@ const routes = [
   {
     id: 11,
     path: '/world-map',
-    title: 'World Map',
+    title: 'World Cities Map',
     isExact: false,
     isNavItem: true,
     render: () => <WorldMap map='cities' />,
@@ -107,16 +108,16 @@ const routes = [
     path: '/missing-migrants-histogram',
     title: 'The Missing Migrants Histogram',
     isExact: false,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <MissingMigrantsHistogram />,
   },
   {
     id: 13,
-    path: '/missing-migrants-map',
-    title: 'The Missing Migrants Map',
+    path: '/missing-migrants',
+    title: 'Missing Migrants',
     isExact: false,
     isNavItem: true,
-    render: () => <WorldMap map='missingMigrants' />,
+    render: () => <MissingMigrants />,
   },
   route404,
 ]
