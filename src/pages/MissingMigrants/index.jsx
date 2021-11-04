@@ -46,7 +46,7 @@ const MissingMigrants = () => {
   const options = useMemo(
     () => [
       {
-        projection: geoAzimuthalEquidistant().scale(120).rotate([0, -90]),
+        projection: geoAzimuthalEquidistant().center([0, -50]).scale(120).rotate([0, -90, -40]),
         value: 'AzimuthalEquidistant',
         label: 'Azimuthal Projection',
       },
@@ -68,13 +68,38 @@ const MissingMigrants = () => {
   const [size, setSize] = useState({ svgWidth: 0, svgHeight: 0 })
 
   useEffect(() => {
-    const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
+    const rect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
+    const svgHeight = rect?.height || 0
+    const svgWidth = rect?.width || 0
 
     setSize({
-      svgWidth: svgRect?.width || 0,
-      svgHeight: svgRect?.height || 0,
+      svgWidth,
+      svgHeight,
     })
-  }, [])
+  }, [data])
+
+  const c = {
+    histogram: {
+      margin: {
+        left: 70,
+        right: 40,
+        bottom: 70,
+      },
+      height: 0.125,
+    },
+  }
+
+  const { histogram } = useMemo(
+    () => ({
+      histogram: {
+        height: size.svgHeight * c.histogram.height,
+        width: size.svgWidth - c.histogram.margin.left - c.histogram.margin.right,
+        xPos: c.histogram.margin.left,
+        yPos: size.svgHeight - size.svgHeight * c.histogram.height - c.histogram.margin.bottom,
+      },
+    }),
+    [size],
+  )
 
   return (
     <div
@@ -119,7 +144,15 @@ const MissingMigrants = () => {
             <>
               <Map projection={selectedProjection.projection} size={size} data={mapData} />
 
-              <Histogram data={histogramData} />
+              <g transform={`translate(${histogram.xPos},${histogram.yPos})`}>
+                <Histogram
+                  data={histogramData}
+                  size={{
+                    height: histogram.height,
+                    width: histogram.width,
+                  }}
+                />
+              </g>
             </>
           ) : null}
         </svg>
