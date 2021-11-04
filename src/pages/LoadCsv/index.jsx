@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 const LoadCSV = () => {
-  const [data, setData] = useState('')
+  const [, setData] = useState('')
 
   useEffect(() => {
     (async () => {
@@ -16,8 +16,6 @@ const LoadCSV = () => {
       }
     })()
   }, [])
-
-  console.log({ data })
 
   return <div data-load-csv>Load and Parsing CSV Data</div>
 }

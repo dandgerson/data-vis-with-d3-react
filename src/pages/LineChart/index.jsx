@@ -16,10 +16,6 @@ const LineChart = () => {
     }),
   )
 
-  console.log({
-    data,
-  })
-
   const c = {
     margin: {
       top: 20,

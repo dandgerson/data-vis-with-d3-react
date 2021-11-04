@@ -59,8 +59,6 @@ const MissingMigrantsHistogram = () => {
     }),
   )
 
-  console.log({ data })
-
   const svgSize = useMemo(() => {
     const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
     const width = svgRect?.width || 0
@@ -85,8 +83,6 @@ const MissingMigrantsHistogram = () => {
       .domain(xScale.domain())
       .thresholds(timeMonths(start, stop))(data)
 
-    console.log({ binnedData })
-
     const processedData = binnedData.map(monthDataSet => ({
       totalDeathAndMissingByMonth: sum(monthDataSet, getYValue),
       x0: monthDataSet.x0,
@@ -95,8 +91,6 @@ const MissingMigrantsHistogram = () => {
 
     return processedData
   }, [data])
-
-  console.log({ processedData })
 
   const getXProcessedValue = d => d.x0
   const getYProcessedValue = d => d.totalDeathAndMissingByMonth

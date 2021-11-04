@@ -82,8 +82,6 @@ const MissingMigrants = () => {
 
   const [brushExtent, setBrushExtent] = useState(null)
 
-  console.log({ brushExtent, data })
-
   const getXValue = d => d.reportedDate
 
   const filteredData = brushExtent

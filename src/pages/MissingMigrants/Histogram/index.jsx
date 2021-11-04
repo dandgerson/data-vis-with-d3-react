@@ -50,7 +50,10 @@ const Histogram = ({
 }) => {
   const getYValue = d => d.totalDeadAndMissing
 
-  const xScale = scaleTime().domain(extent(data, getXValue)).range([0, size.width]).nice()
+  const xScale = useMemo(
+    () => scaleTime().domain(extent(data, getXValue)).range([0, size.width]).nice(),
+    [data, getXValue, size.width],
+  )
 
   const [start, stop] = xScale.domain()
 
@@ -129,8 +132,6 @@ const Histogram = ({
     brush.on('brush end', ({ selection }) => {
       setBrushExtent(selection?.map(d => xScale.invert(d)))
     })
-
-    console.log({ brushSelection })
   }, [data])
 
   return (
