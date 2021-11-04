@@ -42,8 +42,8 @@ const Map = ({ projection }) => {
       scale: 1.8,
     },
     cities: {
-      minPopulation: 500000,
-      size: [0.5, 3],
+      minPopulation: 50000,
+      size: [0.5, 3.5],
     },
   }
 
