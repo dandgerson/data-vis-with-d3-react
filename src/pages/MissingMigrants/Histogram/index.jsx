@@ -43,6 +43,8 @@ const c = {
   },
 }
 
+const formatTick = timeFormat('%m/%d/%Y')
+
 const Histogram = ({
   data, size, setBrushExtent, getXValue,
 }) => {
@@ -78,7 +80,6 @@ const Histogram = ({
   const xAxisLabel = 'Reported Date'
   const yAxisLabel = 'Dead and Missing By Month'
 
-  const formatTick = timeFormat('%m/%d/%Y')
   const formatTooltip = value => value
 
   const renderXAxis = ({ xScale, height, formatTick }) => xScale.ticks().map(tickValue => (
