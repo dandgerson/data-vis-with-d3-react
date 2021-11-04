@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { geoAzimuthalEquidistant, geoEqualEarth } from 'd3'
 
 import useCsv from 'hooks/useCsv'
@@ -65,6 +65,17 @@ const MissingMigrants = () => {
     options,
   })
 
+  const [size, setSize] = useState({ svgWidth: 0, svgHeight: 0 })
+
+  useEffect(() => {
+    const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
+
+    setSize({
+      svgWidth: svgRect?.width || 0,
+      svgHeight: svgRect?.height || 0,
+    })
+  }, [])
+
   return (
     <div
       style={{
@@ -97,9 +108,21 @@ const MissingMigrants = () => {
       >
         <h2>{selectedProjection.label}</h2>
 
-        <Map projection={selectedProjection.projection} data={mapData} />
+        <svg
+          data-svg-container
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          {size.svgHeight && data.length > 0 ? (
+            <>
+              <Map projection={selectedProjection.projection} size={size} data={mapData} />
 
-        <Histogram data={histogramData} />
+              <Histogram data={histogramData} />
+            </>
+          ) : null}
+        </svg>
       </div>
     </div>
   )

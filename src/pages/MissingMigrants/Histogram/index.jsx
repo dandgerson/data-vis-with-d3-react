@@ -136,64 +136,52 @@ const Histogram = ({ data }) => {
   )
 
   return (
-    <svg
-      data-svg-container
-      style={{
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      {processedData.length > 1 ? (
-        <g transform={`translate(${c.margin.left},${c.margin.top})`}>
-          <g data-axis-bottom>
-            {renderAxisBottom({
-              xScale,
-              height: svgSize.innerHeight,
-              formatTick,
-            })}
+    <g transform={`translate(${c.margin.left},${c.margin.top})`}>
+      <g data-axis-bottom>
+        {renderAxisBottom({
+          xScale,
+          height: svgSize.innerHeight,
+          formatTick,
+        })}
 
-            <text
-              className={s.axisLabel}
-              x={svgSize.innerWidth / 2}
-              y={svgSize.innerHeight + c.axis.x.label.yOffset}
-              dy={c.axis.x.dy}
-              textAnchor='middle'
-            >
-              {xAxisLabel}
-            </text>
-          </g>
+        <text
+          className={s.axisLabel}
+          x={svgSize.innerWidth / 2}
+          y={svgSize.innerHeight + c.axis.x.label.yOffset}
+          dy={c.axis.x.dy}
+          textAnchor='middle'
+        >
+          {xAxisLabel}
+        </text>
+      </g>
 
-          <g data-axis-left>
-            {renderAxisLeft({
-              yScale,
-              width: svgSize.innerWidth,
-              formatTick,
-            })}
+      <g data-axis-left>
+        {renderAxisLeft({
+          yScale,
+          width: svgSize.innerWidth,
+          formatTick,
+        })}
 
-            <text
-              className={s.axisLabel}
-              textAnchor='middle'
-              transform={`translate(${-c.axis.y.label.xOffset},${
-                svgSize.innerHeight / 2
-              }) rotate(-90)`}
-            >
-              {yAxisLabel}
-            </text>
-          </g>
+        <text
+          className={s.axisLabel}
+          textAnchor='middle'
+          transform={`translate(${-c.axis.y.label.xOffset},${svgSize.innerHeight / 2}) rotate(-90)`}
+        >
+          {yAxisLabel}
+        </text>
+      </g>
 
-          <g data-marks>
-            {renderMarks({
-              data: processedData,
-              xScale,
-              yScale,
-              getYValue: getYProcessedValue,
-              getXValue: getXProcessedValue,
-              formatTooltip,
-            })}
-          </g>
-        </g>
-      ) : null}
-    </svg>
+      <g data-marks>
+        {renderMarks({
+          data: processedData,
+          xScale,
+          yScale,
+          getYValue: getYProcessedValue,
+          getXValue: getXProcessedValue,
+          formatTooltip,
+        })}
+      </g>
+    </g>
   )
 }
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import React, { useMemo, useEffect, useState } from 'react'
+import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
 import {
   geoPath, geoGraticule, scaleSqrt, extent, format,
@@ -9,7 +9,7 @@ import countries50m from 'world-atlas/countries-50m.json'
 
 import s from './Map.m.scss'
 
-const Map = ({ projection, data }) => {
+const Map = ({ projection, data, size }) => {
   const { path, graticule, mapData } = useMemo(() => {
     const path = geoPath(projection)
     const graticule = geoGraticule()
@@ -34,17 +34,6 @@ const Map = ({ projection, data }) => {
       size: [0.5, 5],
     },
   }
-
-  const [size, setSize] = useState({ svgWidth: 0, svgHeight: 0 })
-
-  useEffect(() => {
-    const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
-
-    setSize({
-      svgWidth: svgRect?.width || 0,
-      svgHeight: svgRect?.height || 0,
-    })
-  }, [])
 
   const formatNumberValue = format('.2s')
   const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
@@ -81,22 +70,10 @@ const Map = ({ projection, data }) => {
     </g>
   )
 
-  return (
-    <svg
-      data-svg-container
-      style={{
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      {size.svgHeight && data.length > 0
-        ? renderMarks({
-          mapData,
-          migrantsData: data,
-        })
-        : null}
-    </svg>
-  )
+  return renderMarks({
+    mapData,
+    migrantsData: data,
+  })
 }
 
 Map.propTypes = {
