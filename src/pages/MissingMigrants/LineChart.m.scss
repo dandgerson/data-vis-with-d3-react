@@ -1,0 +1,40 @@
+@import 'styles/variables';
+
+.axisBottom {
+  &_line {
+    stroke: $color-axis-line;
+  }
+  &_text {
+    text-anchor: middle;
+    fill: $color-axis-text;
+  }
+}
+
+.axisLeft {
+  &_line {
+    stroke: $color-axis-line;
+  }
+  &_text {
+    text-anchor: end;
+    fill: $color-axis-text;
+  }
+}
+
+.axisLabel {
+  font-size: 1.5em;
+  fill: $color-light;
+}
+
+.marks {
+  &_line {
+    fill: none;
+    stroke: rgba($color-accent, 0.5);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  &_circle {
+    fill: rgba($color-accent, 0.25);
+    stroke: rgba($color-light, 0.25);
+  }
+}

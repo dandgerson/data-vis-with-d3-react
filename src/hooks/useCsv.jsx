@@ -6,10 +6,11 @@ const useCsv = (url, convertRow) => {
   initialCsv.columns = []
 
   const [csvData, setCsvData] = useState(initialCsv)
+
   useEffect(() => {
     csv(url, convertRow).then(setCsvData)
 
-    return () => setCsvData(initialCsv)
+    return () => setCsvData(csvData)
   }, [url])
 
   return [
