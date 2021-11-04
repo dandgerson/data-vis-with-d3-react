@@ -34,7 +34,14 @@ const commonConfig = merge([
   parts.loadFonts(),
 ])
 
-const productionConfig = merge([parts.eliminateUnusedCss()])
+const productionConfig = merge([
+  {
+    performance: {
+      hints: false,
+    },
+  },
+  // parts.eliminateUnusedCss(),
+])
 
 const developmentConfig = merge([
   {
@@ -45,7 +52,7 @@ const developmentConfig = merge([
 /**
  * Alternate way to get the mode value
  *
- * const mode = process.argv[process.argv.indexOf('--mode') + 1]
+ * const mode = process.argv[process.argv.indexOf('--mode`') + 1]
  */
 const getConfig = mode => {
   switch (mode) {

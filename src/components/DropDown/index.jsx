@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
@@ -11,8 +12,8 @@ const DropDown = ({
 
     <select
       id={id}
-      value={selectedValue}
-      onChange={event => setSelectedValue(event.target.value)}
+      value={selectedValue.value}
+      onChange={event => setSelectedValue(options.find(option => option.value === event.target.value))}
     >
       {options.map(option => (
         <option key={option.value} value={option.value}>
@@ -31,14 +32,14 @@ DropDown.propTypes = {
   label: PropTypes.string,
   id: PropTypes.string.isRequired,
   options: PropTypes.array.isRequired,
-  selectedValue: PropTypes.string.isRequired,
+  selectedValue: PropTypes.object.isRequired,
   setSelectedValue: PropTypes.func.isRequired,
 }
 
 export default DropDown
 
 export const useDropDown = ({
-  label, options, id, initialValue = options[0].value,
+  label, options, id, initialValue = options[0],
 }, deps = []) => {
   const [selectedValue, setSelectedValue] = useState(initialValue)
 

@@ -1,19 +1,22 @@
 {
+  "homepage": "https://dandgerson.github.io/data-vis-with-d3-react",
   "name": "data-vis-with-d3-react",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production",
     "prod": "webpack --mode production",
+    "prod-serve": "webpack serve --mode production --env test=test --color",
     "dev": "webpack --mode development --env test=test --color",
     "start": "webpack serve --mode development --env test=test --color",
     "watch": "nodemon --watch webpack.*.js --exec \"npm run dev\"",
     "clear": "rm -rf dist",
     "eslint": "eslint --ext .js,.jsx . --fix",
     "prettier": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "keywords": [],
   "author": "Dmitry G. Anderson",
@@ -21,6 +24,7 @@
   "dependencies": {
     "clsx": "^1.1.1",
     "d3": "^7.0.0",
+    "gh-pages": "^3.2.3",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
