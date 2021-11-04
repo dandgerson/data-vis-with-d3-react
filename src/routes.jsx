@@ -13,7 +13,6 @@ import LineChart from 'pages/LineChart'
 import Page404 from 'pages/Page404'
 import WorldMap from 'pages/WorldMap'
 import MissingMigrantsHistogram from 'pages/MissingMigrantsHistogram'
-import MissingMigrantsMap from 'pages/MissingMigrantsMap'
 
 const route404 = {
   id: 0,
@@ -101,7 +100,7 @@ const routes = [
     title: 'World Map',
     isExact: false,
     isNavItem: true,
-    render: () => <WorldMap />,
+    render: () => <WorldMap map='cities' />,
   },
   {
     id: 12,
@@ -117,7 +116,7 @@ const routes = [
     title: 'The Missing Migrants Map',
     isExact: false,
     isNavItem: true,
-    render: () => <MissingMigrantsMap />,
+    render: () => <WorldMap map='missingMigrants' />,
   },
   route404,
 ]

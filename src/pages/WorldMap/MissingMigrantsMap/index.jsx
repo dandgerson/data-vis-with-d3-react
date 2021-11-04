@@ -25,15 +25,21 @@ const Map = ({ projection }) => {
     }
   }, [projection])
 
-  const [citiesData] = useCsv(
-    'https://gist.githubusercontent.com/dandgerson/818b414f48bd41bcb1bdf72b4c5fda67/raw/world_cities_filtered.csv',
-    d => ({
-      ...d,
-      lat: +d.lat,
-      lng: +d.lng,
-      population: +d.population,
-    }),
+  const [migrantsData] = useCsv(
+    'https://gist.githubusercontent.com/dandgerson/0e0b9478a72c23a60f3622efd6300338/raw/missing_migrants.csv',
+    d => {
+      const [lat, lng] = d['Location Coordinates'].split(',').map(d => +d)
+
+      return {
+        ...d,
+        lat,
+        lng,
+        totalDeadAndMissing: +d['Total Dead and Missing'],
+      }
+    },
   )
+
+  console.log({ migrantsData })
 
   const c = {
     pos: {
@@ -41,16 +47,10 @@ const Map = ({ projection }) => {
       zero: -250,
       scale: 1.8,
     },
-    cities: {
-      minPopulation: 50000,
+    circle: {
       size: [0.5, 3.5],
     },
   }
-
-  const filteredCitiesData = useMemo(
-    () => citiesData.filter(d => d.population >= c.cities.minPopulation),
-    [citiesData],
-  )
 
   const [size, setSize] = useState({ svgWidth: 0, svgHeight: 0 })
 
@@ -65,12 +65,10 @@ const Map = ({ projection }) => {
 
   const formatNumberValue = format('.2s')
   const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
-  const getSizeValue = d => d.population
-  const sizeScale = scaleSqrt()
-    .domain(extent(filteredCitiesData, getSizeValue))
-    .range(c.cities.size)
+  const getSizeValue = d => d.totalDeadAndMissing
+  const sizeScale = scaleSqrt().domain(extent(migrantsData, getSizeValue)).range(c.circle.size)
 
-  const renderMarks = ({ mapData, citiesData }) => (
+  const renderMarks = ({ mapData, migrantsData }) => (
     <g
       data-marks
       className={s.marks}
@@ -88,12 +86,12 @@ const Map = ({ projection }) => {
 
       <path className={s.marks_interiors} d={path(mapData.interiors)} />
 
-      {citiesData.map((d, i) => {
+      {migrantsData.map((d, i) => {
         const [x, y] = projection([d.lng, d.lat])
 
         return (
-          <circle key={i} cx={x} cy={y} r={sizeScale(getSizeValue(d))} className={s.marks_city}>
-            <title>{`${d.city}: ${formatTooltipValue(d.population)}`}</title>
+          <circle key={i} cx={x} cy={y} r={sizeScale(getSizeValue(d))} className={s.marks_circle}>
+            <title>{`${formatTooltipValue(getSizeValue(d))}`}</title>
           </circle>
         )
       })}
@@ -108,10 +106,10 @@ const Map = ({ projection }) => {
         height: '100%',
       }}
     >
-      {size.svgHeight
+      {size.svgHeight && migrantsData.length > 0
         ? renderMarks({
           mapData,
-          citiesData: filteredCitiesData,
+          migrantsData,
         })
         : null}
     </svg>
