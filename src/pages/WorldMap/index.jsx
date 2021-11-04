@@ -9,12 +9,12 @@ const WorldMap = () => {
   const options = useMemo(
     () => [
       {
-        projection: geoAzimuthalEquidistant().rotate([0, -90]),
+        projection: geoAzimuthalEquidistant().scale(120).rotate([0, -90]),
         value: 'AzimuthalEquidistant',
         label: 'Azimuthal Projection',
       },
       {
-        projection: geoEqualEarth().scale(140),
+        projection: geoEqualEarth().scale(160),
         value: 'EqualEarth',
         label: 'Equal Earth Projection',
       },

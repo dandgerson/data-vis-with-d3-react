@@ -4,7 +4,7 @@ import { geoAzimuthalEquidistant } from 'd3'
 import Map from 'pages/WorldMap/Map'
 
 // import s from './Home.m.scss'
-const projection = geoAzimuthalEquidistant().rotate([0, -90])
+const projection = geoAzimuthalEquidistant().scale(130).rotate([0, -90])
 
 const Home = () => (
   <div
