@@ -46,7 +46,7 @@ const MissingMigrants = () => {
   const options = useMemo(
     () => [
       {
-        projection: geoAzimuthalEquidistant().scale(120).rotate([0, -90]),
+        projection: geoAzimuthalEquidistant().center([0, -50]).scale(120).rotate([0, -90, -40]),
         value: 'AzimuthalEquidistant',
         label: 'Azimuthal Projection',
       },
@@ -80,22 +80,22 @@ const MissingMigrants = () => {
 
   const c = {
     histogram: {
-      xOffset: 70,
-      yOffset: 70,
       margin: {
+        left: 70,
         right: 40,
+        bottom: 70,
       },
-      heightMultipler: 0.2,
+      height: 0.125,
     },
   }
 
   const { histogram } = useMemo(
     () => ({
       histogram: {
-        height: size.svgHeight * c.histogram.heightMultipler - c.histogram.yOffset,
-        width: size.svgWidth - c.histogram.xOffset - c.histogram.margin.right,
-        xPos: c.histogram.xOffset,
-        yPos: size.svgHeight - size.svgHeight * c.histogram.heightMultipler,
+        height: size.svgHeight * c.histogram.height,
+        width: size.svgWidth - c.histogram.margin.left - c.histogram.margin.right,
+        xPos: c.histogram.margin.left,
+        yPos: size.svgHeight - size.svgHeight * c.histogram.height - c.histogram.margin.bottom,
       },
     }),
     [size],

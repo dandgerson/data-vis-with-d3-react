@@ -116,10 +116,9 @@ const Histogram = ({ data, size }) => {
   )
 
   return (
-    <g
-      data-histogram
-      // transform={`translate(${c.margin.left},0)`}
-    >
+    <g data-histogram>
+      <rect className={s.substrate} width={size.width} height={size.height} />
+
       <g data-x-axis>
         {renderXAxis({
           xScale,

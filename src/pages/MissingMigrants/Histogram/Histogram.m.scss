@@ -1,5 +1,9 @@
 @import 'styles/variables';
 
+.substrate {
+  fill: $color-dark;
+}
+
 .axisBottom {
   &_line {
     stroke: rgba($color-accent, 0.1);
