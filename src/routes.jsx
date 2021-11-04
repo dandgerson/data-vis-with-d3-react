@@ -12,7 +12,8 @@ import LineChart from 'pages/LineChart'
 
 import Page404 from 'pages/Page404'
 import WorldMap from 'pages/WorldMap'
-import MissingMigrants from 'pages/MissingMigrants'
+import MissingMigrantsHistogram from 'pages/MissingMigrantsHistogram'
+import MissingMigrantsMap from 'pages/MissingMigrantsMap'
 
 const route404 = {
   id: 0,
@@ -104,11 +105,19 @@ const routes = [
   },
   {
     id: 12,
-    path: '/missing-migrants',
-    title: 'The Missing Migrants',
+    path: '/missing-migrants-histogram',
+    title: 'The Missing Migrants Histogram',
     isExact: false,
     isNavItem: true,
-    render: () => <MissingMigrants />,
+    render: () => <MissingMigrantsHistogram />,
+  },
+  {
+    id: 13,
+    path: '/missing-migrants-map',
+    title: 'The Missing Migrants Map',
+    isExact: false,
+    isNavItem: true,
+    render: () => <MissingMigrantsMap />,
   },
   route404,
 ]

@@ -14,7 +14,7 @@ import {
   // line, curveNatural,
 } from 'd3'
 
-import s from './LineChart.m.scss'
+import s from './MissingMigrantsHistogram.m.scss'
 
 const c = {
   margin: {
@@ -49,7 +49,7 @@ const c = {
   },
 }
 
-const MissingMigrants = () => {
+const MissingMigrantsHistogram = () => {
   const [data] = useCsv(
     'https://gist.githubusercontent.com/dandgerson/0e0b9478a72c23a60f3622efd6300338/raw/missing_migrants.csv',
     d => ({
@@ -254,4 +254,4 @@ const MissingMigrants = () => {
   )
 }
 
-export default MissingMigrants
+export default MissingMigrantsHistogram
