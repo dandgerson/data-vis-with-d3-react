@@ -108,7 +108,7 @@ const routes = [
     path: '/missing-migrants-histogram',
     title: 'The Missing Migrants Histogram',
     isExact: false,
-    isNavItem: true,
+    isNavItem: false,
     render: () => <MissingMigrantsHistogram />,
   },
   {
