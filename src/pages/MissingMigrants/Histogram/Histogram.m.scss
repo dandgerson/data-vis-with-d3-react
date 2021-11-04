@@ -2,26 +2,26 @@
 
 .axisBottom {
   &_line {
-    stroke: $color-axis-line;
+    stroke: rgba($color-accent, 0.1);
   }
   &_text {
     text-anchor: middle;
-    fill: $color-axis-text;
+    fill: rgb($color-light, 0.5);
   }
 }
 
 .axisLeft {
   &_line {
-    stroke: $color-axis-line;
+    stroke: rgba($color-accent, 0.1);
   }
   &_text {
     text-anchor: end;
-    fill: $color-axis-text;
+    fill: rgb($color-light, 0.5);
   }
 }
 
 .axisLabel {
-  font-size: 1.5em;
+  font-size: 1em;
   fill: $color-light;
 }
 

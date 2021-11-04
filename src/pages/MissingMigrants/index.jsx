@@ -68,13 +68,38 @@ const MissingMigrants = () => {
   const [size, setSize] = useState({ svgWidth: 0, svgHeight: 0 })
 
   useEffect(() => {
-    const svgRect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
+    const rect = document.querySelector('[data-svg-container]')?.getBoundingClientRect()
+    const svgHeight = rect?.height || 0
+    const svgWidth = rect?.width || 0
 
     setSize({
-      svgWidth: svgRect?.width || 0,
-      svgHeight: svgRect?.height || 0,
+      svgWidth,
+      svgHeight,
     })
-  }, [])
+  }, [data])
+
+  const c = {
+    histogram: {
+      xOffset: 70,
+      yOffset: 70,
+      margin: {
+        right: 40,
+      },
+      heightMultipler: 0.2,
+    },
+  }
+
+  const { histogram } = useMemo(
+    () => ({
+      histogram: {
+        height: size.svgHeight * c.histogram.heightMultipler - c.histogram.yOffset,
+        width: size.svgWidth - c.histogram.xOffset - c.histogram.margin.right,
+        xPos: c.histogram.xOffset,
+        yPos: size.svgHeight - size.svgHeight * c.histogram.heightMultipler,
+      },
+    }),
+    [size],
+  )
 
   return (
     <div
@@ -119,7 +144,15 @@ const MissingMigrants = () => {
             <>
               <Map projection={selectedProjection.projection} size={size} data={mapData} />
 
-              <Histogram data={histogramData} />
+              <g transform={`translate(${histogram.xPos},${histogram.yPos})`}>
+                <Histogram
+                  data={histogramData}
+                  size={{
+                    height: histogram.height,
+                    width: histogram.width,
+                  }}
+                />
+              </g>
             </>
           ) : null}
         </svg>
