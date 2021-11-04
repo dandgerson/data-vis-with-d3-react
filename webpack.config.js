@@ -7,7 +7,7 @@ const commonConfig = merge([
   {
     entry: ['./src'],
     output: {
-      publicPath: '/',
+      publicPath: 'auto',
       assetModuleFilename: '[name][ext][query]',
     },
     resolve: {
