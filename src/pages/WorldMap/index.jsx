@@ -1,11 +1,13 @@
 /* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
+import PropTypes from 'prop-types'
 import { geoAzimuthalEquidistant, geoEqualEarth } from 'd3'
 
 import { useDropDown } from 'components/DropDown'
-import Map from 'pages/WorldMap/Map'
+import CitiesMap from 'pages/WorldMap/CitiesMap'
+import MissingMigrantsMap from './MissingMigrantsMap'
 
-const WorldMap = () => {
+const WorldMap = ({ map }) => {
   const options = useMemo(
     () => [
       {
@@ -28,6 +30,17 @@ const WorldMap = () => {
     options,
   })
 
+  const maps = {
+    missingMigrants: {
+      title: 'Missing Migrants Map',
+      render: ({ projection }) => <MissingMigrantsMap projection={projection} />,
+    },
+    cities: {
+      title: 'Cities Map',
+      render: ({ projection }) => <CitiesMap projection={projection} />,
+    },
+  }
+
   return (
     <div
       style={{
@@ -40,7 +53,7 @@ const WorldMap = () => {
           width: '20%',
         }}
       >
-        <h2>World Map!</h2>
+        <h2>{`World ${maps[map].title}`}</h2>
         <br />
 
         {dropDownProjection}
@@ -59,10 +72,19 @@ const WorldMap = () => {
         }}
       >
         <h2>{selectedProjection.label}</h2>
-        <Map projection={selectedProjection.projection} />
+
+        {maps[map].render({ projection: selectedProjection.projection })}
       </div>
     </div>
   )
+}
+
+WorldMap.defaultProps = {
+  map: 'cities',
+}
+
+WorldMap.propTypes = {
+  map: PropTypes.string,
 }
 
 export default WorldMap
