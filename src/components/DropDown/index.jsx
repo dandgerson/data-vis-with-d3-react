@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 
 import s from './DropDown.m.scss'
@@ -45,14 +45,18 @@ export const useDropDown = ({
 
   useEffect(() => setSelectedValue(initialValue), deps)
 
-  return [
-    <DropDown
-      label={label}
-      options={options}
-      id={id}
-      selectedValue={selectedValue}
-      setSelectedValue={setSelectedValue}
-    />,
-    selectedValue,
-  ]
+  const dropDown = useMemo(
+    () => (
+      <DropDown
+        label={label}
+        options={options}
+        id={id}
+        selectedValue={selectedValue}
+        setSelectedValue={setSelectedValue}
+      />
+    ),
+    [label, options, id, initialValue],
+  )
+
+  return [dropDown, selectedValue]
 }
