@@ -9,6 +9,20 @@ import countries50m from 'world-atlas/countries-50m.json'
 
 import s from './Map.m.scss'
 
+const formatNumberValue = format('.2s')
+const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
+const getSizeValue = d => d.totalDeadAndMissing
+const c = {
+  pos: {
+    xOffset: -230,
+    zero: -250,
+    scale: 1.8,
+  },
+  circle: {
+    size: [0.5, 5],
+  },
+}
+
 const Map = ({ projection, data, size }) => {
   const { path, graticule, mapData } = useMemo(() => {
     const path = geoPath(projection)
@@ -24,23 +38,9 @@ const Map = ({ projection, data, size }) => {
     }
   }, [projection])
 
-  const c = {
-    pos: {
-      xOffset: -230,
-      zero: -250,
-      scale: 1.8,
-    },
-    circle: {
-      size: [0.5, 5],
-    },
-  }
-
-  const formatNumberValue = format('.2s')
-  const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
-  const getSizeValue = d => d.totalDeadAndMissing
   const sizeScale = scaleSqrt().domain(extent(data, getSizeValue)).range(c.circle.size)
 
-  const renderMarks = ({ mapData, migrantsData }) => (
+  return (
     <g
       data-marks
       className={s.marks}
@@ -58,7 +58,7 @@ const Map = ({ projection, data, size }) => {
 
       <path className={s.marks_interiors} d={path(mapData.interiors)} />
 
-      {migrantsData.map((d, i) => {
+      {data.map((d, i) => {
         const [x, y] = projection([d.lng, d.lat])
 
         return (
@@ -69,16 +69,12 @@ const Map = ({ projection, data, size }) => {
       })}
     </g>
   )
-
-  return renderMarks({
-    mapData,
-    migrantsData: data,
-  })
 }
 
 Map.propTypes = {
   projection: PropTypes.func.isRequired,
   data: PropTypes.array.isRequired,
+  size: PropTypes.object.isRequired,
 }
 
 export default Map

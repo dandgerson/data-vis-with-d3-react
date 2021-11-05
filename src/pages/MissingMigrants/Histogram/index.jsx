@@ -45,6 +45,9 @@ const c = {
 
 const formatTick = timeFormat('%m/%d/%Y')
 const getYValue = d => d.totalDeadAndMissing
+const getXProcessedValue = d => d.x0
+const getYProcessedValue = d => d.totalDeadAndMissingByMonth
+const formatTooltip = value => value
 
 const Histogram = ({
   data, size, setBrushExtent, getXValue,
@@ -69,23 +72,18 @@ const Histogram = ({
     }))
 
     return processedData
-  }, [data])
-
-  const getXProcessedValue = d => d.x0
-  const getYProcessedValue = d => d.totalDeadAndMissingByMonth
+  }, [data, getXValue, xScale, getYValue])
 
   const yScale = useMemo(
     () => scaleLinear()
       .domain([0, max(processedData, getYProcessedValue)])
       .range([size.height, 0])
       .nice(),
-    [processedData],
+    [processedData, getYProcessedValue, size.height],
   )
 
   const xAxisLabel = 'Reported Date'
   const yAxisLabel = 'Dead and Missing By Month'
-
-  const formatTooltip = value => value
 
   const renderXAxis = ({ xScale, height, formatTick }) => xScale.ticks().map(tickValue => (
     <g key={tickValue} transform={`translate(${xScale(tickValue)},0)`}>
