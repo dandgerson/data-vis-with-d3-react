@@ -134,16 +134,44 @@ const Histogram = ({
     })
   }, [data])
 
+  console.log('plain')
+
+  const xAxis = useMemo(
+    () => renderXAxis({
+      xScale,
+      height: size.height,
+      formatTick,
+    }),
+    [xScale, size.height, formatTick],
+  )
+
+  const yAxis = useMemo(
+    () => renderYxis({
+      yScale,
+      width: size.width,
+      formatTick,
+    }),
+    [yScale, size.width, formatTick],
+  )
+
+  const marks = useMemo(
+    () => renderMarks({
+      data: processedData,
+      xScale,
+      yScale,
+      getYValue: getYProcessedValue,
+      getXValue: getXProcessedValue,
+      formatTooltip,
+    }),
+    [processedData, xScale, yScale, getXProcessedValue, getYProcessedValue, formatTooltip],
+  )
+
   return (
     <g data-histogram>
       <rect className={s.substrate} width={size.width} height={size.height} />
 
       <g data-x-axis>
-        {renderXAxis({
-          xScale,
-          height: size.height,
-          formatTick,
-        })}
+        {xAxis}
 
         <text
           className={s.axisLabel}
@@ -157,11 +185,7 @@ const Histogram = ({
       </g>
 
       <g data-y-axis>
-        {renderYxis({
-          yScale,
-          width: size.width,
-          formatTick,
-        })}
+        {yAxis}
 
         <text
           className={s.axisLabel}
@@ -172,16 +196,7 @@ const Histogram = ({
         </text>
       </g>
 
-      <g data-marks>
-        {renderMarks({
-          data: processedData,
-          xScale,
-          yScale,
-          getYValue: getYProcessedValue,
-          getXValue: getXProcessedValue,
-          formatTooltip,
-        })}
-      </g>
+      <g data-marks>{marks}</g>
 
       <g data-brush />
     </g>

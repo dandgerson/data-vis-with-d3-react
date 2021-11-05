@@ -43,8 +43,6 @@ const Map = ({
     }
   }, [projection])
 
-  console.log('plain')
-
   const sizeScale = useMemo(
     () => scaleSqrt().domain(extent(data, getSizeValue)).range(c.circle.size),
     [data, getSizeValue, c],
