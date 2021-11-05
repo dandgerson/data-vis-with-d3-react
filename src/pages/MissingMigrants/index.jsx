@@ -7,6 +7,30 @@ import { useDropDown } from 'components/DropDown'
 import Map from './Map'
 import Histogram from './Histogram'
 
+const getXValue = d => d.reportedDate
+const options = [
+  {
+    projection: geoAzimuthalEquidistant().center([0, -50]).scale(120).rotate([0, -90, -40]),
+    value: 'AzimuthalEquidistant',
+    label: 'Azimuthal Projection',
+  },
+  {
+    projection: geoEqualEarth().scale(160),
+    value: 'EqualEarth',
+    label: 'Equal Earth Projection',
+  },
+]
+const c = {
+  histogram: {
+    margin: {
+      left: 70,
+      right: 40,
+      bottom: 70,
+    },
+    height: 0.125,
+  },
+}
+
 const MissingMigrants = () => {
   const [data] = useCsv(
     'https://gist.githubusercontent.com/dandgerson/0e0b9478a72c23a60f3622efd6300338/raw/missing_migrants.csv',
@@ -20,22 +44,6 @@ const MissingMigrants = () => {
         reportedDate: new Date(d['Reported Date']),
       }
     },
-  )
-
-  const options = useMemo(
-    () => [
-      {
-        projection: geoAzimuthalEquidistant().center([0, -50]).scale(120).rotate([0, -90, -40]),
-        value: 'AzimuthalEquidistant',
-        label: 'Azimuthal Projection',
-      },
-      {
-        projection: geoEqualEarth().scale(160),
-        value: 'EqualEarth',
-        label: 'Equal Earth Projection',
-      },
-    ],
-    [],
   )
 
   const [dropDownProjection, selectedProjection] = useDropDown({
@@ -57,17 +65,6 @@ const MissingMigrants = () => {
     })
   }, [data])
 
-  const c = {
-    histogram: {
-      margin: {
-        left: 70,
-        right: 40,
-        bottom: 70,
-      },
-      height: 0.125,
-    },
-  }
-
   const { histogram } = useMemo(
     () => ({
       histogram: {
@@ -82,17 +79,16 @@ const MissingMigrants = () => {
 
   const [brushExtent, setBrushExtent] = useState(null)
 
-  console.log({ brushExtent, data })
+  const filteredData = useMemo(
+    () => (brushExtent
+      ? data.filter(d => {
+        const date = getXValue(d)
 
-  const getXValue = d => d.reportedDate
-
-  const filteredData = brushExtent
-    ? data.filter(d => {
-      const date = getXValue(d)
-
-      return date > brushExtent[0] && date < brushExtent[1]
-    })
-    : data
+        return date > brushExtent[0] && date < brushExtent[1]
+      })
+      : data),
+    [data, brushExtent, getXValue],
+  )
 
   return (
     <div
@@ -101,16 +97,21 @@ const MissingMigrants = () => {
         height: '100%',
       }}
     >
-      <div
-        style={{
-          width: '20%',
-        }}
-      >
-        <h2>World Missing Migrants</h2>
-        <br />
+      {useMemo(
+        () => (
+          <div
+            style={{
+              width: '20%',
+            }}
+          >
+            <h2>World Missing Migrants</h2>
+            <br />
 
-        {dropDownProjection}
-      </div>
+            {dropDownProjection}
+          </div>
+        ),
+        [dropDownProjection],
+      )}
 
       <div className='separator-v'>
         <div />
@@ -135,7 +136,12 @@ const MissingMigrants = () => {
         >
           {size.svgHeight && data.length > 0 ? (
             <>
-              <Map projection={selectedProjection.projection} size={size} data={filteredData} />
+              <Map
+                projection={selectedProjection.projection}
+                size={size}
+                data={data}
+                filteredData={filteredData}
+              />
 
               <g transform={`translate(${histogram.xPos},${histogram.yPos})`}>
                 <Histogram

@@ -39,8 +39,6 @@ const Map = ({ projection }) => {
     },
   )
 
-  console.log({ migrantsData })
-
   const c = {
     pos: {
       xOffset: -230,

@@ -9,38 +9,46 @@ import countries50m from 'world-atlas/countries-50m.json'
 
 import s from './Map.m.scss'
 
-const Map = ({ projection, data, size }) => {
-  const { path, graticule, mapData } = useMemo(() => {
-    const path = geoPath(projection)
+const formatNumberValue = format('.2s')
+const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
+const getSizeValue = d => d.totalDeadAndMissing
+const c = {
+  pos: {
+    xOffset: -230,
+    zero: -250,
+    scale: 1.8,
+  },
+  circle: {
+    size: [0.5, 5],
+  },
+}
+
+const Map = ({
+  projection, data, filteredData, size,
+}) => {
+  const {
+    spherePath, interiorsPath, landFeaturesPaths, graticules, land,
+  } = useMemo(() => {
     const graticule = geoGraticule()
+    const interiors = mesh(countries50m, countries50m.objects.countries, (a, b) => a !== b)
+    const land = feature(countries50m, countries50m.objects.land)
+    const path = geoPath(projection)
 
     return {
-      path,
-      graticule,
-      mapData: {
-        land: feature(countries50m, countries50m.objects.land),
-        interiors: mesh(countries50m, countries50m.objects.countries, (a, b) => a !== b),
-      },
+      spherePath: path({ type: 'Sphere' }),
+      interiorsPath: path(interiors),
+      landFeaturesPaths: land.features.map(landFeature => path(landFeature)),
+      graticules: path(graticule()),
+      land,
     }
   }, [projection])
 
-  const c = {
-    pos: {
-      xOffset: -230,
-      zero: -250,
-      scale: 1.8,
-    },
-    circle: {
-      size: [0.5, 5],
-    },
-  }
+  const sizeScale = useMemo(
+    () => scaleSqrt().domain(extent(data, getSizeValue)).range(c.circle.size),
+    [data, getSizeValue, c],
+  )
 
-  const formatNumberValue = format('.2s')
-  const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
-  const getSizeValue = d => d.totalDeadAndMissing
-  const sizeScale = scaleSqrt().domain(extent(data, getSizeValue)).range(c.circle.size)
-
-  const renderMarks = ({ mapData, migrantsData }) => (
+  return (
     <g
       data-marks
       className={s.marks}
@@ -48,17 +56,24 @@ const Map = ({ projection, data, size }) => {
         c.pos.zero * c.pos.scale + size.svgHeight / 2
       }) scale(${c.pos.scale})`}
     >
-      <path className={s.marks_sphere} d={path({ type: 'Sphere' })} />
+      {useMemo(
+        () => (
+          <>
+            <path className={s.marks_sphere} d={spherePath} />
 
-      <path className={s.marks_graticules} d={path(graticule())} />
+            <path className={s.marks_graticules} d={graticules} />
 
-      {mapData.land.features.map((feature, i) => (
-        <path key={i} className={s.marks_land} d={path(feature)} />
-      ))}
+            {land.features.map((landFeature, i) => (
+              <path key={i} className={s.marks_land} d={landFeaturesPaths[i]} />
+            ))}
 
-      <path className={s.marks_interiors} d={path(mapData.interiors)} />
+            <path className={s.marks_interiors} d={interiorsPath} />
+          </>
+        ),
+        [spherePath, graticules, land, landFeaturesPaths, interiorsPath],
+      )}
 
-      {migrantsData.map((d, i) => {
+      {filteredData.map((d, i) => {
         const [x, y] = projection([d.lng, d.lat])
 
         return (
@@ -69,16 +84,13 @@ const Map = ({ projection, data, size }) => {
       })}
     </g>
   )
-
-  return renderMarks({
-    mapData,
-    migrantsData: data,
-  })
 }
 
 Map.propTypes = {
   projection: PropTypes.func.isRequired,
   data: PropTypes.array.isRequired,
+  filteredData: PropTypes.array.isRequired,
+  size: PropTypes.object.isRequired,
 }
 
 export default Map

@@ -43,16 +43,23 @@ const c = {
   },
 }
 
+const formatTick = timeFormat('%m/%d/%Y')
+const getYValue = d => d.totalDeadAndMissing
+const getXProcessedValue = d => d.x0
+const getYProcessedValue = d => d.totalDeadAndMissingByMonth
+const formatTooltip = value => value
+
 const Histogram = ({
   data, size, setBrushExtent, getXValue,
 }) => {
-  const getYValue = d => d.totalDeadAndMissing
-
-  const xScale = scaleTime().domain(extent(data, getXValue)).range([0, size.width]).nice()
-
-  const [start, stop] = xScale.domain()
+  const xScale = useMemo(
+    () => scaleTime().domain(extent(data, getXValue)).range([0, size.width]).nice(),
+    [data, getXValue, size.width],
+  )
 
   const processedData = useMemo(() => {
+    const [start, stop] = xScale.domain()
+
     const binnedData = bin()
       .value(getXValue)
       .domain(xScale.domain())
@@ -65,21 +72,18 @@ const Histogram = ({
     }))
 
     return processedData
-  }, [data])
+  }, [data, getXValue, xScale, getYValue])
 
-  const getXProcessedValue = d => d.x0
-  const getYProcessedValue = d => d.totalDeadAndMissingByMonth
-
-  const yScale = scaleLinear()
-    .domain([0, max(processedData, getYProcessedValue)])
-    .range([size.height, 0])
-    .nice()
+  const yScale = useMemo(
+    () => scaleLinear()
+      .domain([0, max(processedData, getYProcessedValue)])
+      .range([size.height, 0])
+      .nice(),
+    [processedData, getYProcessedValue, size.height],
+  )
 
   const xAxisLabel = 'Reported Date'
   const yAxisLabel = 'Dead and Missing By Month'
-
-  const formatTick = timeFormat('%m/%d/%Y')
-  const formatTooltip = value => value
 
   const renderXAxis = ({ xScale, height, formatTick }) => xScale.ticks().map(tickValue => (
     <g key={tickValue} transform={`translate(${xScale(tickValue)},0)`}>
@@ -128,20 +132,44 @@ const Histogram = ({
     brush.on('brush end', ({ selection }) => {
       setBrushExtent(selection?.map(d => xScale.invert(d)))
     })
-
-    console.log({ brushSelection })
   }, [data])
+
+  const xAxis = useMemo(
+    () => renderXAxis({
+      xScale,
+      height: size.height,
+      formatTick,
+    }),
+    [xScale, size.height, formatTick],
+  )
+
+  const yAxis = useMemo(
+    () => renderYxis({
+      yScale,
+      width: size.width,
+      formatTick,
+    }),
+    [yScale, size.width, formatTick],
+  )
+
+  const marks = useMemo(
+    () => renderMarks({
+      data: processedData,
+      xScale,
+      yScale,
+      getYValue: getYProcessedValue,
+      getXValue: getXProcessedValue,
+      formatTooltip,
+    }),
+    [processedData, xScale, yScale, getXProcessedValue, getYProcessedValue, formatTooltip],
+  )
 
   return (
     <g data-histogram>
       <rect className={s.substrate} width={size.width} height={size.height} />
 
       <g data-x-axis>
-        {renderXAxis({
-          xScale,
-          height: size.height,
-          formatTick,
-        })}
+        {xAxis}
 
         <text
           className={s.axisLabel}
@@ -155,11 +183,7 @@ const Histogram = ({
       </g>
 
       <g data-y-axis>
-        {renderYxis({
-          yScale,
-          width: size.width,
-          formatTick,
-        })}
+        {yAxis}
 
         <text
           className={s.axisLabel}
@@ -170,16 +194,7 @@ const Histogram = ({
         </text>
       </g>
 
-      <g data-marks>
-        {renderMarks({
-          data: processedData,
-          xScale,
-          yScale,
-          getYValue: getYProcessedValue,
-          getXValue: getXProcessedValue,
-          formatTooltip,
-        })}
-      </g>
+      <g data-marks>{marks}</g>
 
       <g data-brush />
     </g>

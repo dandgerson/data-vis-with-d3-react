@@ -14,10 +14,6 @@ const BarChart = () => {
     }),
   )
 
-  console.log({
-    data,
-  })
-
   const processedData = useMemo(() => data.slice(0, 10), [data])
 
   const c = {
