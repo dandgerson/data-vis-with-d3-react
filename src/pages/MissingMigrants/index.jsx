@@ -131,7 +131,12 @@ const MissingMigrants = () => {
         >
           {size.svgHeight && data.length > 0 ? (
             <>
-              <Map projection={selectedProjection.projection} size={size} data={filteredData} />
+              <Map
+                projection={selectedProjection.projection}
+                size={size}
+                data={data}
+                filteredData={filteredData}
+              />
 
               <g transform={`translate(${histogram.xPos},${histogram.yPos})`}>
                 <Histogram
