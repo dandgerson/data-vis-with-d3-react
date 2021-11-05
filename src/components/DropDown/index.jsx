@@ -55,7 +55,7 @@ export const useDropDown = ({
         setSelectedValue={setSelectedValue}
       />
     ),
-    [label, options, id, initialValue],
+    [label, options, id, initialValue, selectedValue],
   )
 
   return [dropDown, selectedValue]
