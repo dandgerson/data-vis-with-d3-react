@@ -8,6 +8,28 @@ import Map from './Map'
 import Histogram from './Histogram'
 
 const getXValue = d => d.reportedDate
+const options = [
+  {
+    projection: geoAzimuthalEquidistant().center([0, -50]).scale(120).rotate([0, -90, -40]),
+    value: 'AzimuthalEquidistant',
+    label: 'Azimuthal Projection',
+  },
+  {
+    projection: geoEqualEarth().scale(160),
+    value: 'EqualEarth',
+    label: 'Equal Earth Projection',
+  },
+]
+const c = {
+  histogram: {
+    margin: {
+      left: 70,
+      right: 40,
+      bottom: 70,
+    },
+    height: 0.125,
+  },
+}
 
 const MissingMigrants = () => {
   const [data] = useCsv(
@@ -22,22 +44,6 @@ const MissingMigrants = () => {
         reportedDate: new Date(d['Reported Date']),
       }
     },
-  )
-
-  const options = useMemo(
-    () => [
-      {
-        projection: geoAzimuthalEquidistant().center([0, -50]).scale(120).rotate([0, -90, -40]),
-        value: 'AzimuthalEquidistant',
-        label: 'Azimuthal Projection',
-      },
-      {
-        projection: geoEqualEarth().scale(160),
-        value: 'EqualEarth',
-        label: 'Equal Earth Projection',
-      },
-    ],
-    [],
   )
 
   const [dropDownProjection, selectedProjection] = useDropDown({
@@ -59,17 +65,6 @@ const MissingMigrants = () => {
     })
   }, [data])
 
-  const c = {
-    histogram: {
-      margin: {
-        left: 70,
-        right: 40,
-        bottom: 70,
-      },
-      height: 0.125,
-    },
-  }
-
   const { histogram } = useMemo(
     () => ({
       histogram: {
@@ -84,13 +79,16 @@ const MissingMigrants = () => {
 
   const [brushExtent, setBrushExtent] = useState(null)
 
-  const filteredData = brushExtent
-    ? data.filter(d => {
-      const date = getXValue(d)
+  const filteredData = useMemo(
+    () => (brushExtent
+      ? data.filter(d => {
+        const date = getXValue(d)
 
-      return date > brushExtent[0] && date < brushExtent[1]
-    })
-    : data
+        return date > brushExtent[0] && date < brushExtent[1]
+      })
+      : data),
+    [data, brushExtent, getXValue],
+  )
 
   return (
     <div
