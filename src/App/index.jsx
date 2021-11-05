@@ -1,5 +1,5 @@
 import React from 'react'
-import { HashRouter, Switch, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import cl from 'clsx'
 
 import routes from 'routes'
@@ -16,11 +16,11 @@ const App = () => (
       </div>
 
       <div className={cl(s.content)}>
-        <Switch>
+        <Routes>
           {routes.map(route => (
-            <Route key={route.id} exact={route.isExact} path={route.path} render={route.render} />
+            <Route key={route.id} path={route.path} element={route.render()} />
           ))}
-        </Switch>
+        </Routes>
       </div>
 
       <div className={s.footer}>
