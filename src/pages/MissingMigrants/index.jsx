@@ -97,16 +97,21 @@ const MissingMigrants = () => {
         height: '100%',
       }}
     >
-      <div
-        style={{
-          width: '20%',
-        }}
-      >
-        <h2>World Missing Migrants</h2>
-        <br />
+      {useMemo(
+        () => (
+          <div
+            style={{
+              width: '20%',
+            }}
+          >
+            <h2>World Missing Migrants</h2>
+            <br />
 
-        {dropDownProjection}
-      </div>
+            {dropDownProjection}
+          </div>
+        ),
+        [dropDownProjection],
+      )}
 
       <div className='separator-v'>
         <div />

@@ -134,8 +134,6 @@ const Histogram = ({
     })
   }, [data])
 
-  console.log('plain')
-
   const xAxis = useMemo(
     () => renderXAxis({
       xScale,

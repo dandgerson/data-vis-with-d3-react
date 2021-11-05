@@ -56,15 +56,22 @@ const Map = ({
         c.pos.zero * c.pos.scale + size.svgHeight / 2
       }) scale(${c.pos.scale})`}
     >
-      <path className={s.marks_sphere} d={spherePath} />
+      {useMemo(
+        () => (
+          <>
+            <path className={s.marks_sphere} d={spherePath} />
 
-      <path className={s.marks_graticules} d={graticules} />
+            <path className={s.marks_graticules} d={graticules} />
 
-      {land.features.map((landFeature, i) => (
-        <path key={i} className={s.marks_land} d={landFeaturesPaths[i]} />
-      ))}
+            {land.features.map((landFeature, i) => (
+              <path key={i} className={s.marks_land} d={landFeaturesPaths[i]} />
+            ))}
 
-      <path className={s.marks_interiors} d={interiorsPath} />
+            <path className={s.marks_interiors} d={interiorsPath} />
+          </>
+        ),
+        [spherePath, graticules, land, landFeaturesPaths, interiorsPath],
+      )}
 
       {filteredData.map((d, i) => {
         const [x, y] = projection([d.lng, d.lat])
