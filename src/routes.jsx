@@ -119,6 +119,14 @@ const routes = [
     isNavItem: true,
     render: () => <MissingMigrants />,
   },
+  {
+    id: 14,
+    path: '/world-hiv-map',
+    title: 'World HIV Map',
+    isExact: false,
+    isNavItem: true,
+    render: () => <WorldMap map='hiv' />,
+  },
   route404,
 ]
 

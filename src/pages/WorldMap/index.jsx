@@ -6,6 +6,7 @@ import { geoAzimuthalEquidistant, geoEqualEarth } from 'd3'
 import { useDropDown } from 'components/DropDown'
 import CitiesMap from 'pages/WorldMap/CitiesMap'
 import MissingMigrantsMap from './MissingMigrantsMap'
+import HivAidsChoroplethMap from './HivAidsChoroplethMap'
 
 const WorldMap = ({ map }) => {
   const options = useMemo(
@@ -38,6 +39,10 @@ const WorldMap = ({ map }) => {
     cities: {
       title: 'Cities Map',
       render: ({ projection }) => <CitiesMap projection={projection} />,
+    },
+    hiv: {
+      title: 'HIV Map',
+      render: ({ projection }) => <HivAidsChoroplethMap projection={projection} />,
     },
   }
 
