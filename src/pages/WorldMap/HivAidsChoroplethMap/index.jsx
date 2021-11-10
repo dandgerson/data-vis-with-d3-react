@@ -2,13 +2,13 @@
 import React, { useMemo, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import {
-  geoPath, geoGraticule, extent, format, schemeYlOrRd, scaleSequential,
+  geoPath, geoGraticule, extent, interpolateYlOrRd, scaleSequential,
 } from 'd3'
 import { feature, mesh } from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
 import useCsv from 'hooks/useCsv'
 
-import s from './MissingMigrantsMap.m.scss'
+import s from './HivAidsChoropleth.m.scss'
 
 const c = {
   pos: {
@@ -21,23 +21,24 @@ const c = {
   },
 }
 
-const formatNumberValue = format('.2s')
-const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
 const getColorValue = d => d.prevalence
 const selectedYear = '2017'
+const missingDataColor = 'grey'
 
-const Map = ({ projection }) => {
-  const { path, graticule, mapData } = useMemo(() => {
+const HivAidsChoroplethMap = ({ projection }) => {
+  const {
+    path, pathSphere, pathGraticules, pathInteriors, countries,
+  } = useMemo(() => {
     const path = geoPath(projection)
     const graticule = geoGraticule()
+    const interiors = mesh(countries50m, countries50m.objects.countries, (a, b) => a !== b)
 
     return {
       path,
-      graticule,
-      mapData: {
-        land: feature(countries50m, countries50m.objects.land),
-        interiors: mesh(countries50m, countries50m.objects.countries, (a, b) => a !== b),
-      },
+      pathSphere: path({ type: 'Sphere' }),
+      pathGraticules: path(graticule()),
+      pathInteriors: path(interiors),
+      countries: feature(countries50m, countries50m.objects.countries),
     }
   }, [projection])
 
@@ -49,9 +50,41 @@ const Map = ({ projection }) => {
     }),
   )
 
-  const processedData = useMemo(() => data.filter(d => d.Year === selectedYear), [data])
+  const [codesData] = useCsv(
+    'https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/slim-3/slim-3.csv',
+  )
 
-  console.log({ data: processedData })
+  const { filteredByYearDataWithId, rowByCountriesId } = useMemo(() => {
+    const codeToIdMap = codesData.reduce(
+      (acc, current) => ({
+        ...acc,
+        [current['alpha-3']]: current['country-code'],
+      }),
+      {},
+    )
+
+    const filteredByYearDataWithId = data
+      .filter(d => d.Year === selectedYear)
+      .map(d => ({
+        ...d,
+        id: codeToIdMap[d.Code],
+      }))
+
+    const rowByCountriesId = filteredByYearDataWithId.reduce(
+      (acc, current) => ({
+        ...acc,
+        [current.id]: current,
+      }),
+      {},
+    )
+
+    return {
+      filteredByYearDataWithId,
+      rowByCountriesId,
+    }
+  }, [data, codesData])
+
+  console.log({ filteredByYearDataWithId, prevalenceByCountry: rowByCountriesId })
 
   const [size, setSize] = useState({ svgWidth: 0, svgHeight: 0 })
 
@@ -64,7 +97,9 @@ const Map = ({ projection }) => {
     })
   }, [])
 
-  const colorScale = scaleSequential(schemeYlOrRd).domain(extent(processedData, getColorValue))
+  const colorScale = scaleSequential(interpolateYlOrRd).domain(
+    extent(filteredByYearDataWithId, getColorValue),
+  )
 
   const renderMarks = () => (
     <g
@@ -74,25 +109,18 @@ const Map = ({ projection }) => {
         c.pos.zero * c.pos.scale + size.svgHeight / 2
       }) scale(${c.pos.scale})`}
     >
-      <path className={s.marks_sphere} d={path({ type: 'Sphere' })} />
+      <path className={s.marks_sphere} d={pathSphere} />
 
-      <path className={s.marks_graticules} d={path(graticule())} />
+      <path className={s.marks_graticules} d={pathGraticules} />
 
-      {mapData.land.features.map((feature, i) => (
-        <path key={i} className={s.marks_land} d={path(feature)} />
-      ))}
+      {countries.features.map((feature, i) => {
+        const d = rowByCountriesId[feature.id] || {}
+        const color = colorScale(getColorValue(d)) || missingDataColor
 
-      <path className={s.marks_interiors} d={path(mapData.interiors)} />
-
-      {processedData.map((d, i) => {
-        const [x, y] = projection([d.lng, d.lat])
-
-        return (
-          <circle key={i} cx={x} cy={y} r={colorScale(getColorValue(d))} className={s.marks_circle}>
-            <title>{`${formatTooltipValue(getColorValue(d))}`}</title>
-          </circle>
-        )
+        return <path key={i} fill={color} d={path(feature)} />
       })}
+
+      <path className={s.marks_interiors} d={pathInteriors} />
     </g>
   )
 
@@ -104,18 +132,13 @@ const Map = ({ projection }) => {
         height: '100%',
       }}
     >
-      {size.svgHeight && processedData.length > 0
-        ? renderMarks({
-          mapData,
-          migrantsData: processedData,
-        })
-        : null}
+      {size.svgHeight && filteredByYearDataWithId.length > 0 ? renderMarks() : null}
     </svg>
   )
 }
 
-Map.propTypes = {
+HivAidsChoroplethMap.propTypes = {
   projection: PropTypes.func.isRequired,
 }
 
-export default Map
+export default HivAidsChoroplethMap

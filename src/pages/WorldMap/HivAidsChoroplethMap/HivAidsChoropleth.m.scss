@@ -1,9 +1,6 @@
 @import 'styles/variables';
 
 .marks {
-  &_land {
-    fill: rgba($color-accent, 0.15);
-  }
   &_sphere {
     fill: rgba($color-accent, 0.05);
   }
