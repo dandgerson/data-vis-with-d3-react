@@ -2,7 +2,7 @@
 import React, { useMemo, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import {
-  geoPath, geoGraticule, scaleSqrt, extent, format,
+  geoPath, geoGraticule, extent, format, schemeYlOrRd, scaleSequential,
 } from 'd3'
 import { feature, mesh } from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
@@ -23,7 +23,7 @@ const c = {
 
 const formatNumberValue = format('.2s')
 const formatTooltipValue = value => formatNumberValue(value).replace('G', 'B')
-const getSizeValue = d => d.totalDeadAndMissing
+const getColorValue = d => d.prevalence
 const selectedYear = '2017'
 
 const Map = ({ projection }) => {
@@ -64,9 +64,9 @@ const Map = ({ projection }) => {
     })
   }, [])
 
-  const sizeScale = scaleSqrt().domain(extent(processedData, getSizeValue)).range(c.circle.size)
+  const colorScale = scaleSequential(schemeYlOrRd).domain(extent(processedData, getColorValue))
 
-  const renderMarks = ({ mapData, migrantsData }) => (
+  const renderMarks = () => (
     <g
       data-marks
       className={s.marks}
@@ -84,12 +84,12 @@ const Map = ({ projection }) => {
 
       <path className={s.marks_interiors} d={path(mapData.interiors)} />
 
-      {migrantsData.map((d, i) => {
+      {processedData.map((d, i) => {
         const [x, y] = projection([d.lng, d.lat])
 
         return (
-          <circle key={i} cx={x} cy={y} r={sizeScale(getSizeValue(d))} className={s.marks_circle}>
-            <title>{`${formatTooltipValue(getSizeValue(d))}`}</title>
+          <circle key={i} cx={x} cy={y} r={colorScale(getColorValue(d))} className={s.marks_circle}>
+            <title>{`${formatTooltipValue(getColorValue(d))}`}</title>
           </circle>
         )
       })}
