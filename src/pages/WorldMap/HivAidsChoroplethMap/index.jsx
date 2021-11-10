@@ -84,8 +84,6 @@ const HivAidsChoroplethMap = ({ projection }) => {
     }
   }, [data, codesData])
 
-  console.log({ filteredByYearDataWithId, prevalenceByCountry: rowByCountriesId })
-
   const [size, setSize] = useState({ svgWidth: 0, svgHeight: 0 })
 
   useEffect(() => {
