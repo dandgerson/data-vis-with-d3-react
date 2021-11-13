@@ -14,6 +14,7 @@ import Page404 from 'pages/Page404'
 import WorldMap from 'pages/WorldMap'
 import MissingMigrantsHistogram from 'pages/MissingMigrantsHistogram'
 import MissingMigrants from 'pages/MissingMigrants'
+import Covid19Chart from 'pages/Covid19Chart'
 
 const route404 = {
   id: 0,
@@ -126,6 +127,14 @@ const routes = [
     isExact: false,
     isNavItem: true,
     render: () => <WorldMap map='hiv' />,
+  },
+  {
+    id: 15,
+    path: '/covid19-chart',
+    title: 'Covid19 Chart',
+    isExact: false,
+    isNavItem: true,
+    render: () => <Covid19Chart />,
   },
   route404,
 ]
