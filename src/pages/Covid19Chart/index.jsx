@@ -1,5 +1,9 @@
+/* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
+import { format } from 'd3'
+
+const formatNumber = num => format(',')(num)
 
 const Covid19Chart = () => {
   const [data] = useCsv(
@@ -8,12 +12,19 @@ const Covid19Chart = () => {
 
   console.log({ data })
 
-  const processedData = useMemo(() => {
+  const { lastDateColumn, deathsTotalByLastDate } = useMemo(() => {
     const lastDateColumn = data.columns[data.columns.length - 1]
-    return lastDateColumn
+
+    const deathsTotalByLastDate = data.reduce((acc, current) => acc + +current[lastDateColumn], 0)
+
+    console.log({ columns: data.columns })
+
+    return {
+      lastDateColumn,
+      deathsTotalByLastDate,
+    }
   }, [data])
 
-  console.log({ processedData })
   return (
     <div
       style={{
@@ -41,6 +52,8 @@ const Covid19Chart = () => {
             Jhons Hopkins Coronavirus Dataset
           </a>
         </p>
+
+        <p>{`${formatNumber(deathsTotalByLastDate)} deaths as of ${lastDateColumn}`}</p>
       </div>
 
       <div className='separator-v'>
