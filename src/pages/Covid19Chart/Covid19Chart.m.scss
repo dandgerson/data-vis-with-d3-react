@@ -2,6 +2,7 @@
 
 text {
   font-size: 2em;
+  fill: rgba($color-accent, 1);
 }
 
 .line {
@@ -17,6 +18,18 @@ text {
   }
   &_text {
     fill: rgba($color-accent, 1);
+  }
+}
+
+.labels {
+  .title {
+    font-size: 2em;
+    fill: rgba($color-accent, 1);
+  }
+
+  text {
+    font-size: 1.75em;
+    fill: rgba($color-accent, 0.75);
   }
 }
 

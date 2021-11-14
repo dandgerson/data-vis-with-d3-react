@@ -9,7 +9,7 @@ import {
   timeParse,
   timeFormat,
   scaleTime,
-  scaleLinear,
+  scaleLog,
   extent,
   line,
 } from 'd3'
@@ -22,15 +22,24 @@ const parseTime = timeFormat('%e %b %y')
 const getXValue = d => d.date
 const getYValue = d => d.deaths
 const c = {
-  deltaPos: 8,
+  marker: {
+    left: { dx: -8 },
+    bottom: { dy: 8 },
+  },
   margin: {
-    top: 40,
+    top: 80,
     right: 80,
-    bottom: 140,
-    left: 140,
+    bottom: 100,
+    left: 100,
   },
   axis: {
-    tickPadding: 16,
+    tickXPadding: 16,
+    tickYPadding: 4,
+  },
+  label: {
+    top: { dy: -40 },
+    left: { dy: -50 },
+    bottom: { dy: 50 },
   },
 }
 
@@ -62,7 +71,8 @@ const Covid19Chart = () => {
 
   const xScale = scaleTime().domain(extent(deathsData, getXValue)).range([0, innerWidth])
 
-  const yScale = scaleLinear().domain(extent(deathsData, getYValue)).range([innerHeight, 0])
+  // The trick with Log scale is that you can't start with zero in the domain
+  const yScale = scaleLog().domain(extent(deathsData, getYValue)).range([innerHeight, 0])
 
   console.log(extent(deathsData, getYValue))
 
@@ -81,7 +91,7 @@ const Covid19Chart = () => {
           textAnchor='end'
           alignmentBaseline='central'
           y={yPos}
-          dx={-c.deltaPos}
+          dx={c.marker.left.dx}
         >
           {formatNumber(qty)}
         </text>
@@ -102,7 +112,7 @@ const Covid19Chart = () => {
           alignmentBaseline='hanging'
           x={xPos}
           y={innerHeight}
-          dy={c.deltaPos}
+          dy={c.marker.bottom.dy}
         >
           {parseTime(xValue)}
         </text>
@@ -116,7 +126,7 @@ const Covid19Chart = () => {
 
     const xAxis = axisBottom(xScale)
       .tickSize(-innerHeight)
-      .tickPadding(c.axis.tickPadding)
+      .tickPadding(c.axis.tickXPadding)
       .tickFormat(parseTime)
 
     const xAxisG = select('[data-x-axis]').call(xAxis)
@@ -135,8 +145,8 @@ const Covid19Chart = () => {
 
     const yAxis = axisLeft(yScale)
       .tickSize(-innerWidth)
-      .tickPadding(c.axis.tickPadding)
-      .tickFormat(formatNumber)
+      .tickPadding(c.axis.tickYPadding)
+      .ticks(10, '~s')
 
     const yAxisG = select('[data-y-axis]').call(yAxis)
 
@@ -205,6 +215,27 @@ const Covid19Chart = () => {
 
               {renderYMarker()}
               {renderXMarker()}
+
+              <g data-labels className={s.labels}>
+                <text className={s.title} dy={c.label.top.dy}>
+                  World Coronavirus Deaths Over Time
+                </text>
+                <text
+                  transform={`translate(0,${innerHeight / 2}) rotate(-90)`}
+                  textAnchor='middle'
+                  dy={c.label.left.dy}
+                >
+                  Cumulative Deaths
+                </text>
+                <text
+                  transform={`translate(${innerWidth / 2},${innerHeight})`}
+                  textAnchor='middle'
+                  alignmentBaseline='hanging'
+                  dy={c.label.bottom.dy}
+                >
+                  Time
+                </text>
+              </g>
             </g>
           ) : null}
         </svg>
