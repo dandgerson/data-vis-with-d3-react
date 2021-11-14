@@ -3,4 +3,10 @@
 .line {
   fill: none;
   stroke: rgba($color-accent, 1);
+  stroke-width: 5px;
+}
+
+.markerLine {
+  stroke-width: 1px;
+  stroke: rgba($color-accent, 1);
 }

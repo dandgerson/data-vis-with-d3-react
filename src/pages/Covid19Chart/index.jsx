@@ -56,6 +56,12 @@ const Covid19Chart = () => {
     .x(d => xScale(getXValue(d)))
     .y(d => yScale(getYValue(d)))(deathsData)
 
+  const renderMarkerLine = () => {
+    const qty = 100000 * 30
+
+    return <line className={s.markerLine} x2={svgSize.width} y1={yScale(qty)} y2={yScale(qty)} />
+  }
+
   return (
     <div
       style={{
@@ -101,13 +107,17 @@ const Covid19Chart = () => {
 
         <svg data-svg width='100%' height='100%'>
           {deathsData.length > 0 ? (
-            <path
-              className={s.line}
-              style={{
-                fill: 'none',
-              }}
-              d={lineGenerator}
-            />
+            <>
+              <path
+                className={s.line}
+                style={{
+                  fill: 'none',
+                }}
+                d={lineGenerator}
+              />
+
+              {renderMarkerLine()}
+            </>
           ) : null}
         </svg>
       </div>
