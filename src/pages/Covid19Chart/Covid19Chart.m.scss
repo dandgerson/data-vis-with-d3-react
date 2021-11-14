@@ -1,51 +1,52 @@
 @import 'styles/variables';
-
-text {
-  font-size: 2em;
-  fill: rgba($color-accent, 1);
-}
-
-.line {
-  fill: none;
-  stroke: rgba($color-accent, 1);
-  stroke-width: 5px;
-}
-
-.marker {
-  &_line {
-    stroke-width: 1px;
-    stroke: rgba($color-accent, 1);
-  }
-  &_text {
-    fill: rgba($color-accent, 1);
-  }
-}
-
-.labels {
-  .title {
+.root {
+  text {
     font-size: 2em;
     fill: rgba($color-accent, 1);
   }
 
-  text {
-    font-size: 1.75em;
-    fill: rgba($color-accent, 0.75);
+  .line {
+    fill: none;
+    stroke: rgba($color-accent, 1);
+    stroke-width: 5px;
   }
-}
 
-.xAxis,
-.yAxis {
-  .domain {
-    display: none;
+  .marker {
+    &_line {
+      stroke-width: 1px;
+      stroke: rgba($color-accent, 1);
+    }
+    &_text {
+      fill: rgba($color-accent, 1);
+    }
   }
-  .tick {
-    line {
-      stroke: rgba($color-accent, 0.25);
+
+  .labels {
+    .title {
+      font-size: 2em;
+      fill: rgba($color-accent, 1);
     }
 
     text {
-      fill: rgba($color-accent, 0.5);
-      font-size: 14px;
+      font-size: 1.75em;
+      fill: rgba($color-accent, 0.75);
+    }
+  }
+
+  .xAxis,
+  .yAxis {
+    .domain {
+      display: none;
+    }
+    .tick {
+      line {
+        stroke: rgba($color-accent, 0.25);
+      }
+
+      text {
+        fill: rgba($color-accent, 0.5);
+        font-size: 14px;
+      }
     }
   }
 }

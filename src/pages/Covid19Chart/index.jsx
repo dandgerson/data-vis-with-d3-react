@@ -158,6 +158,7 @@ const Covid19Chart = () => {
 
   return (
     <div
+      className={s.root}
       style={{
         display: 'flex',
         height: '100%',
