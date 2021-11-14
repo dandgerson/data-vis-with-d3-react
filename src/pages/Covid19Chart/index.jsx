@@ -23,8 +23,6 @@ const Covid19Chart = () => {
     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
   )
 
-  console.log({ data })
-
   const deathsData = useMemo(
     () => data.columns.slice(4).map(day => ({
       date: parseDate(day),
@@ -32,8 +30,6 @@ const Covid19Chart = () => {
     })),
     [data],
   )
-
-  console.log({ deathsData })
 
   const svgSize = useMemo(() => {
     const svgRect = document.querySelector('[data-svg]')?.getBoundingClientRect()
@@ -44,13 +40,22 @@ const Covid19Chart = () => {
     }
   }, [data])
 
-  const xScale = scaleTime().domain(extent(deathsData, getXValue)).range([0, svgSize.width])
+  // https://observablehq.com/@d3/margin-convention
+  const margin = {
+    top: 40,
+    right: 40,
+    bottom: 40,
+    left: 140,
+  }
+
+  const innerWidth = svgSize.width - margin.left - margin.right
+  const innerHeight = svgSize.height - margin.top - margin.bottom
+
+  const xScale = scaleTime().domain(extent(deathsData, getXValue)).range([0, innerWidth])
 
   const yScale = scaleLinear()
     .domain([0, max(deathsData, getYValue)])
-    .range([svgSize.height, 0])
-
-  console.log(yScale.domain())
+    .range([innerHeight, 0])
 
   const lineGenerator = line()
     .x(d => xScale(getXValue(d)))
@@ -59,7 +64,7 @@ const Covid19Chart = () => {
   const renderMarkerLine = () => {
     const qty = 100000 * 30
 
-    return <line className={s.markerLine} x2={svgSize.width} y1={yScale(qty)} y2={yScale(qty)} />
+    return <line className={s.markerLine} x2={innerWidth} y1={yScale(qty)} y2={yScale(qty)} />
   }
 
   return (
@@ -107,7 +112,7 @@ const Covid19Chart = () => {
 
         <svg data-svg width='100%' height='100%'>
           {deathsData.length > 0 ? (
-            <>
+            <g transform={`translate(${margin.left},${margin.top})`}>
               <path
                 className={s.line}
                 style={{
@@ -117,7 +122,7 @@ const Covid19Chart = () => {
               />
 
               {renderMarkerLine()}
-            </>
+            </g>
           ) : null}
         </svg>
       </div>
