@@ -1,9 +1,22 @@
 /* eslint-disable no-shadow */
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
-import { format } from 'd3'
+import {
+  // format,
+  timeParse,
+  scaleTime,
+  scaleLinear,
+  extent,
+  max,
+  line,
+} from 'd3'
 
-const formatNumber = num => format(',')(num)
+import s from './Covid19Chart.m.scss'
+
+// const formatNumber = num => format(',')(num)
+const parseDate = timeParse('%m/%d/%Y')
+const getXValue = d => d.date
+const getYValue = d => d.deaths
 
 const Covid19Chart = () => {
   const [data] = useCsv(
@@ -12,18 +25,36 @@ const Covid19Chart = () => {
 
   console.log({ data })
 
-  const { lastDateColumn, deathsTotalByLastDate } = useMemo(() => {
-    const lastDateColumn = data.columns[data.columns.length - 1]
+  const deathsData = useMemo(
+    () => data.columns.slice(4).map(day => ({
+      date: parseDate(day),
+      deaths: data.reduce((acc, current) => acc + +current[day], 0),
+    })),
+    [data],
+  )
 
-    const deathsTotalByLastDate = data.reduce((acc, current) => acc + +current[lastDateColumn], 0)
+  console.log({ deathsData })
 
-    console.log({ columns: data.columns })
+  const svgSize = useMemo(() => {
+    const svgRect = document.querySelector('[data-svg]')?.getBoundingClientRect()
 
     return {
-      lastDateColumn,
-      deathsTotalByLastDate,
+      width: svgRect?.width || 0,
+      height: svgRect?.height || 0,
     }
   }, [data])
+
+  const xScale = scaleTime().domain(extent(deathsData, getXValue)).range([0, svgSize.width])
+
+  const yScale = scaleLinear()
+    .domain([0, max(deathsData, getYValue)])
+    .range([svgSize.height, 0])
+
+  console.log(yScale.domain())
+
+  const lineGenerator = line()
+    .x(d => xScale(getXValue(d)))
+    .y(d => yScale(getYValue(d)))(deathsData)
 
   return (
     <div
@@ -52,8 +83,6 @@ const Covid19Chart = () => {
             Jhons Hopkins Coronavirus Dataset
           </a>
         </p>
-
-        <p>{`${formatNumber(deathsTotalByLastDate)} deaths as of ${lastDateColumn}`}</p>
       </div>
 
       <div className='separator-v'>
@@ -70,7 +99,17 @@ const Covid19Chart = () => {
       >
         <h2>Covid-19 Chart</h2>
 
-        <p>Hello wolrd</p>
+        <svg data-svg width='100%' height='100%'>
+          {deathsData.length > 0 ? (
+            <path
+              className={s.line}
+              style={{
+                fill: 'none',
+              }}
+              d={lineGenerator}
+            />
+          ) : null}
+        </svg>
       </div>
     </div>
   )
