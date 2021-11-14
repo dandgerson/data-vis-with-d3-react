@@ -12,6 +12,7 @@ import {
   scaleLog,
   extent,
   line,
+  max,
 } from 'd3'
 
 import s from './Covid19Chart.m.scss'
@@ -20,7 +21,7 @@ const formatNumber = num => format('.2s')(num)
 const parseDate = timeParse('%m/%d/%Y')
 const parseTime = timeFormat('%e %b %y')
 const getXValue = d => d.date
-const getYValue = d => d.deaths
+const getYValue = d => d.deaths || 1
 const c = {
   marker: {
     left: { dx: -8 },
@@ -48,13 +49,29 @@ const Covid19Chart = () => {
     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
   )
 
-  const deathsData = useMemo(
-    () => data.columns.slice(4).map(day => ({
+  const { totalDeathsData, deathsDataByCountries } = useMemo(() => {
+    const deathsDataByCountries = data
+      .filter(d => d['Province/State'] === '')
+      .map(d => ({
+        name: d['Country/Region'],
+        data: data.columns.slice(4).map(day => ({
+          date: parseDate(day),
+          deaths: +d[day],
+        })),
+      }))
+
+    const totalDeathsData = data.columns.slice(4).map(day => ({
       date: parseDate(day),
       deaths: data.reduce((acc, current) => acc + +current[day], 0),
-    })),
-    [data],
-  )
+    }))
+
+    return {
+      totalDeathsData,
+      deathsDataByCountries,
+    }
+  }, [data])
+
+  console.log({ totalDeathsData })
 
   const svgSize = useMemo(() => {
     const svgRect = document.querySelector('[data-svg]')?.getBoundingClientRect()
@@ -69,16 +86,18 @@ const Covid19Chart = () => {
   const innerWidth = svgSize.width - c.margin.left - c.margin.right
   const innerHeight = svgSize.height - c.margin.top - c.margin.bottom
 
-  const xScale = scaleTime().domain(extent(deathsData, getXValue)).range([0, innerWidth])
+  const xScale = scaleTime().domain(extent(totalDeathsData, getXValue)).range([0, innerWidth])
 
   // The trick with Log scale is that you can't start with zero in the domain
-  const yScale = scaleLog().domain(extent(deathsData, getYValue)).range([innerHeight, 0])
+  const yScale = scaleLog()
+    .domain([1, max(totalDeathsData, getYValue)])
+    .range([innerHeight, 0])
 
-  console.log(extent(deathsData, getYValue))
+  console.log({ yScaleZero: yScale(0) })
 
   const lineGenerator = line()
     .x(d => xScale(getXValue(d)))
-    .y(d => yScale(getYValue(d)))(deathsData)
+    .y(d => yScale(getYValue(d)))
 
   const renderYMarker = () => {
     const qty = 100000 * 30
@@ -101,7 +120,7 @@ const Covid19Chart = () => {
   }
 
   const renderXMarker = () => {
-    const xValue = getXValue(deathsData.slice(-1)[0])
+    const xValue = getXValue(totalDeathsData.slice(-1)[0])
     const xPos = xScale(xValue)
 
     return (
@@ -122,7 +141,7 @@ const Covid19Chart = () => {
   }
 
   useEffect(() => {
-    if (deathsData.length === 0) return
+    if (totalDeathsData.length === 0) return
 
     const xAxis = axisBottom(xScale)
       .tickSize(-innerHeight)
@@ -134,14 +153,14 @@ const Covid19Chart = () => {
     xAxisG.select('.domain').classed(s.domain, true)
     xAxisG.selectAll('.tick').classed(s.tick, true).selectAll('text').nodes()
       .slice(-1)[0].remove()
-  }, [deathsData])
+  }, [totalDeathsData])
 
   const renderXAxis = () => (
     <g data-x-axis className={s.xAxis} transform={`translate(0,${innerHeight})`} />
   )
 
   useEffect(() => {
-    if (deathsData.length === 0) return
+    if (totalDeathsData.length === 0) return
 
     const yAxis = axisLeft(yScale)
       .tickSize(-innerWidth)
@@ -152,7 +171,7 @@ const Covid19Chart = () => {
 
     yAxisG.select('.domain').classed(s.domain, true)
     yAxisG.selectAll('.tick').classed(s.tick, true)
-  }, [deathsData])
+  }, [totalDeathsData])
 
   const renderYAxis = () => <g data-y-axis className={s.yAxis} />
 
@@ -201,14 +220,29 @@ const Covid19Chart = () => {
         <h2>Covid-19 Chart</h2>
 
         <svg data-svg width='100%' height='100%'>
-          {deathsData.length > 0 ? (
+          {totalDeathsData.length > 0 ? (
             <g transform={`translate(${c.margin.left},${c.margin.top})`}>
+              {deathsDataByCountries.slice(0, 10).map(
+                (country, i) => console.log({ country }) || (
+                <path
+                  key={i}
+                  className={s.line}
+                  style={{
+                    fill: 'none',
+                    stroke: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${
+                      Math.random() * 255
+                    })`,
+                  }}
+                  d={lineGenerator(country.data)}
+                />
+                ),
+              )}
               <path
                 className={s.line}
                 style={{
                   fill: 'none',
                 }}
-                d={lineGenerator}
+                d={lineGenerator(totalDeathsData)}
               />
 
               {renderXAxis()}
@@ -219,7 +253,7 @@ const Covid19Chart = () => {
 
               <g data-labels className={s.labels}>
                 <text className={s.title} dy={c.label.top.dy}>
-                  World Coronavirus Deaths Over Time
+                  World Coronavirus Deaths Over Time by Country
                 </text>
                 <text
                   transform={`translate(0,${innerHeight / 2}) rotate(-90)`}
