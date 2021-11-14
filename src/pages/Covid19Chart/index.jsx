@@ -49,18 +49,22 @@ const Covid19Chart = () => {
     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
   )
 
+  console.log({ data })
+
   const { totalDeathsData, deathsDataByCountries } = useMemo(() => {
+    const days = data.columns.slice(4)
+
     const deathsDataByCountries = data
       .filter(d => d['Province/State'] === '')
       .map(d => ({
         name: d['Country/Region'],
-        data: data.columns.slice(4).map(day => ({
+        data: days.map(day => ({
           date: parseDate(day),
           deaths: +d[day],
         })),
       }))
 
-    const totalDeathsData = data.columns.slice(4).map(day => ({
+    const totalDeathsData = days.map(day => ({
       date: parseDate(day),
       deaths: data.reduce((acc, current) => acc + +current[day], 0),
     }))
@@ -92,8 +96,6 @@ const Covid19Chart = () => {
   const yScale = scaleLog()
     .domain([1, max(totalDeathsData, getYValue)])
     .range([innerHeight, 0])
-
-  console.log({ yScaleZero: yScale(0) })
 
   const lineGenerator = line()
     .x(d => xScale(getXValue(d)))
