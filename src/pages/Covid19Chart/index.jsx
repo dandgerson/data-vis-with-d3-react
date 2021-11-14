@@ -224,8 +224,7 @@ const Covid19Chart = () => {
         <svg data-svg width='100%' height='100%'>
           {totalDeathsData.length > 0 ? (
             <g transform={`translate(${c.margin.left},${c.margin.top})`}>
-              {deathsDataByCountries.slice(0, 10).map(
-                (country, i) => console.log({ country }) || (
+              {deathsDataByCountries.slice(0, 10).map((country, i) => (
                 <path
                   key={i}
                   className={s.line}
@@ -237,8 +236,7 @@ const Covid19Chart = () => {
                   }}
                   d={lineGenerator(country.data)}
                 />
-                ),
-              )}
+              ))}
               <path
                 className={s.line}
                 style={{
