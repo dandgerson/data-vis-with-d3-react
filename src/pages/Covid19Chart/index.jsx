@@ -4,13 +4,13 @@ import useCsv from 'hooks/useCsv'
 import {
   select,
   axisBottom,
-  // axisLeft,
+  axisLeft,
   format,
   timeParse,
+  timeFormat,
   scaleTime,
   scaleLinear,
   extent,
-  max,
   line,
 } from 'd3'
 
@@ -18,6 +18,7 @@ import s from './Covid19Chart.m.scss'
 
 const formatNumber = num => format('.2s')(num)
 const parseDate = timeParse('%m/%d/%Y')
+const parseTime = timeFormat('%e %b %y')
 const getXValue = d => d.date
 const getYValue = d => d.deaths
 const c = {
@@ -61,9 +62,9 @@ const Covid19Chart = () => {
 
   const xScale = scaleTime().domain(extent(deathsData, getXValue)).range([0, innerWidth])
 
-  const yScale = scaleLinear()
-    .domain([0, max(deathsData, getYValue)])
-    .range([innerHeight, 0])
+  const yScale = scaleLinear().domain(extent(deathsData, getYValue)).range([innerHeight, 0])
+
+  console.log(extent(deathsData, getYValue))
 
   const lineGenerator = line()
     .x(d => xScale(getXValue(d)))
@@ -103,7 +104,7 @@ const Covid19Chart = () => {
           y={innerHeight}
           dy={c.deltaPos}
         >
-          Now
+          {parseTime(xValue)}
         </text>
         <line className={s.marker_line} y2={innerHeight} x1={xPos} x2={xPos} />
       </g>
@@ -113,17 +114,37 @@ const Covid19Chart = () => {
   useEffect(() => {
     if (deathsData.length === 0) return
 
-    const xAxis = axisBottom(xScale).tickSize(-innerHeight).tickPadding(c.axis.tickPadding)
+    const xAxis = axisBottom(xScale)
+      .tickSize(-innerHeight)
+      .tickPadding(c.axis.tickPadding)
+      .tickFormat(parseTime)
 
     const xAxisG = select('[data-x-axis]').call(xAxis)
 
     xAxisG.select('.domain').classed(s.domain, true)
-    xAxisG.selectAll('.tick').classed(s.tick, true)
+    xAxisG.selectAll('.tick').classed(s.tick, true).selectAll('text').nodes()
+      .slice(-1)[0].remove()
   }, [deathsData])
 
   const renderXAxis = () => (
     <g data-x-axis className={s.xAxis} transform={`translate(0,${innerHeight})`} />
   )
+
+  useEffect(() => {
+    if (deathsData.length === 0) return
+
+    const yAxis = axisLeft(yScale)
+      .tickSize(-innerWidth)
+      .tickPadding(c.axis.tickPadding)
+      .tickFormat(formatNumber)
+
+    const yAxisG = select('[data-y-axis]').call(yAxis)
+
+    yAxisG.select('.domain').classed(s.domain, true)
+    yAxisG.selectAll('.tick').classed(s.tick, true)
+  }, [deathsData])
+
+  const renderYAxis = () => <g data-y-axis className={s.yAxis} />
 
   return (
     <div
@@ -180,6 +201,7 @@ const Covid19Chart = () => {
               />
 
               {renderXAxis()}
+              {renderYAxis()}
 
               {renderYMarker()}
               {renderXMarker()}

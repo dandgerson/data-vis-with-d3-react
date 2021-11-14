@@ -20,7 +20,8 @@ text {
   }
 }
 
-.xAxis {
+.xAxis,
+.yAxis {
   .domain {
     display: none;
   }
