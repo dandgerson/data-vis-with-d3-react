@@ -19,3 +19,19 @@ text {
     fill: rgba($color-accent, 1);
   }
 }
+
+.xAxis {
+  .domain {
+    display: none;
+  }
+  .tick {
+    line {
+      stroke: rgba($color-accent, 0.25);
+    }
+
+    text {
+      fill: rgba($color-accent, 0.5);
+      font-size: 14px;
+    }
+  }
+}

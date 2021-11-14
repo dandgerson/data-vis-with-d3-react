@@ -1,8 +1,17 @@
 /* eslint-disable no-shadow */
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import useCsv from 'hooks/useCsv'
 import {
-  format, timeParse, scaleTime, scaleLinear, extent, max, line,
+  select,
+  axisBottom,
+  // axisLeft,
+  format,
+  timeParse,
+  scaleTime,
+  scaleLinear,
+  extent,
+  max,
+  line,
 } from 'd3'
 
 import s from './Covid19Chart.m.scss'
@@ -18,6 +27,9 @@ const c = {
     right: 80,
     bottom: 140,
     left: 140,
+  },
+  axis: {
+    tickPadding: 16,
   },
 }
 
@@ -62,7 +74,7 @@ const Covid19Chart = () => {
     const yPos = yScale(qty)
 
     return (
-      <g className={s.marker}>
+      <g data-y-marker className={s.marker}>
         <text
           className={s.marker_text}
           textAnchor='end'
@@ -82,7 +94,7 @@ const Covid19Chart = () => {
     const xPos = xScale(xValue)
 
     return (
-      <g className={s.marker}>
+      <g data-x-marker className={s.marker}>
         <text
           className={s.marker_text}
           textAnchor='middle'
@@ -97,6 +109,21 @@ const Covid19Chart = () => {
       </g>
     )
   }
+
+  useEffect(() => {
+    if (deathsData.length === 0) return
+
+    const xAxis = axisBottom(xScale).tickSize(-innerHeight).tickPadding(c.axis.tickPadding)
+
+    const xAxisG = select('[data-x-axis]').call(xAxis)
+
+    xAxisG.select('.domain').classed(s.domain, true)
+    xAxisG.selectAll('.tick').classed(s.tick, true)
+  }, [deathsData])
+
+  const renderXAxis = () => (
+    <g data-x-axis className={s.xAxis} transform={`translate(0,${innerHeight})`} />
+  )
 
   return (
     <div
@@ -151,6 +178,8 @@ const Covid19Chart = () => {
                 }}
                 d={lineGenerator}
               />
+
+              {renderXAxis()}
 
               {renderYMarker()}
               {renderXMarker()}
