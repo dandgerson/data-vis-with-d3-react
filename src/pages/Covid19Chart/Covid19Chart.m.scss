@@ -1,12 +1,21 @@
 @import 'styles/variables';
 
+text {
+  font-size: 2em;
+}
+
 .line {
   fill: none;
   stroke: rgba($color-accent, 1);
   stroke-width: 5px;
 }
 
-.markerLine {
-  stroke-width: 1px;
-  stroke: rgba($color-accent, 1);
+.marker {
+  &_line {
+    stroke-width: 1px;
+    stroke: rgba($color-accent, 1);
+  }
+  &_text {
+    fill: rgba($color-accent, 1);
+  }
 }

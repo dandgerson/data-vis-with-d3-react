@@ -2,21 +2,24 @@
 import React, { useMemo } from 'react'
 import useCsv from 'hooks/useCsv'
 import {
-  // format,
-  timeParse,
-  scaleTime,
-  scaleLinear,
-  extent,
-  max,
-  line,
+  format, timeParse, scaleTime, scaleLinear, extent, max, line,
 } from 'd3'
 
 import s from './Covid19Chart.m.scss'
 
-// const formatNumber = num => format(',')(num)
+const formatNumber = num => format('.2s')(num)
 const parseDate = timeParse('%m/%d/%Y')
 const getXValue = d => d.date
 const getYValue = d => d.deaths
+const c = {
+  deltaPos: 8,
+  margin: {
+    top: 40,
+    right: 80,
+    bottom: 140,
+    left: 140,
+  },
+}
 
 const Covid19Chart = () => {
   const [data] = useCsv(
@@ -41,15 +44,8 @@ const Covid19Chart = () => {
   }, [data])
 
   // https://observablehq.com/@d3/margin-convention
-  const margin = {
-    top: 40,
-    right: 40,
-    bottom: 40,
-    left: 140,
-  }
-
-  const innerWidth = svgSize.width - margin.left - margin.right
-  const innerHeight = svgSize.height - margin.top - margin.bottom
+  const innerWidth = svgSize.width - c.margin.left - c.margin.right
+  const innerHeight = svgSize.height - c.margin.top - c.margin.bottom
 
   const xScale = scaleTime().domain(extent(deathsData, getXValue)).range([0, innerWidth])
 
@@ -61,10 +57,45 @@ const Covid19Chart = () => {
     .x(d => xScale(getXValue(d)))
     .y(d => yScale(getYValue(d)))(deathsData)
 
-  const renderMarkerLine = () => {
+  const renderYMarker = () => {
     const qty = 100000 * 30
+    const yPos = yScale(qty)
 
-    return <line className={s.markerLine} x2={innerWidth} y1={yScale(qty)} y2={yScale(qty)} />
+    return (
+      <g className={s.marker}>
+        <text
+          className={s.marker_text}
+          textAnchor='end'
+          alignmentBaseline='central'
+          y={yPos}
+          dx={-c.deltaPos}
+        >
+          {formatNumber(qty)}
+        </text>
+        <line className={s.marker_line} x2={innerWidth} y1={yPos} y2={yPos} />
+      </g>
+    )
+  }
+
+  const renderXMarker = () => {
+    const xValue = getXValue(deathsData.slice(-1)[0])
+    const xPos = xScale(xValue)
+
+    return (
+      <g className={s.marker}>
+        <text
+          className={s.marker_text}
+          textAnchor='middle'
+          alignmentBaseline='hanging'
+          x={xPos}
+          y={innerHeight}
+          dy={c.deltaPos}
+        >
+          Now
+        </text>
+        <line className={s.marker_line} y2={innerHeight} x1={xPos} x2={xPos} />
+      </g>
+    )
   }
 
   return (
@@ -112,7 +143,7 @@ const Covid19Chart = () => {
 
         <svg data-svg width='100%' height='100%'>
           {deathsData.length > 0 ? (
-            <g transform={`translate(${margin.left},${margin.top})`}>
+            <g transform={`translate(${c.margin.left},${c.margin.top})`}>
               <path
                 className={s.line}
                 style={{
@@ -121,7 +152,8 @@ const Covid19Chart = () => {
                 d={lineGenerator}
               />
 
-              {renderMarkerLine()}
+              {renderYMarker()}
+              {renderXMarker()}
             </g>
           ) : null}
         </svg>
