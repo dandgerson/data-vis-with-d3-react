@@ -94,11 +94,11 @@ const Covid19Chart = () => {
   }, [data])
 
   const { innerHeight, innerWidth } = useMemo(
-    () => console.log('memo Height') || {
+    () => ({
       // https://observablehq.com/@d3/margin-convention
       innerWidth: svgSize.width - c.margin.left - c.margin.right,
       innerHeight: svgSize.height - c.margin.top - c.margin.bottom,
-    },
+    }),
     [svgSize],
   )
 
@@ -203,7 +203,7 @@ const Covid19Chart = () => {
 
   const [activeCountryName, setActiveCountryName] = useState('')
 
-  console.log({ activeCountryName })
+  // console.log({ activeCountryName })
 
   const handleVoronoiHover = useCallback(
     d => {
@@ -215,7 +215,7 @@ const Covid19Chart = () => {
     [setActiveCountryName],
   )
 
-  console.log('plain')
+  // console.log('plain')
 
   const renderVoronoiOverlay = () => {
     // console.log('memo')
@@ -225,15 +225,16 @@ const Covid19Chart = () => {
 
     return (
       <g data-voronoi-overlay>
-        {points.map((_, i) => (
-          <path
-            key={i}
-            fill='none'
-            stroke='hotpink'
-            d={voronoi.renderCell(i)}
-            onMouseEnter={() => handleVoronoiHover(totalData[i])}
-          />
-        ))}
+        {console.log('memo voronoi')
+          || points.map((_, i) => (
+            <path
+              key={i}
+              fill='none'
+              stroke='hotpink'
+              d={voronoi.renderCell(i)}
+              onMouseEnter={() => handleVoronoiHover(totalData[i])}
+            />
+          ))}
       </g>
     )
   }
