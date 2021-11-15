@@ -5,7 +5,6 @@ import { geoAzimuthalEquidistant, geoEqualEarth } from 'd3'
 
 import { useDropDown } from 'components/DropDown'
 import CitiesMap from 'pages/WorldMap/CitiesMap'
-import MissingMigrantsMap from './MissingMigrantsMap'
 import HivAidsChoroplethMap from './HivAidsChoroplethMap'
 
 const WorldMap = ({ map }) => {
@@ -32,10 +31,6 @@ const WorldMap = ({ map }) => {
   })
 
   const maps = {
-    missingMigrants: {
-      title: 'Missing Migrants Map',
-      render: ({ projection }) => <MissingMigrantsMap projection={projection} />,
-    },
     cities: {
       title: 'Cities Map',
       render: ({ projection }) => <CitiesMap projection={projection} />,
