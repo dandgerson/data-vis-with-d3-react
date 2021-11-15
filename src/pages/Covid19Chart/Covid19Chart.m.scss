@@ -5,12 +5,6 @@
     fill: rgba($color-accent, 1);
   }
 
-  .line {
-    fill: none;
-    stroke: rgba($color-accent, 1);
-    stroke-width: 5px;
-  }
-
   .marker {
     &_line {
       stroke-width: 1px;
@@ -33,6 +27,24 @@
     }
   }
 
+  .line {
+    &_total {
+      fill: none;
+      stroke: rgba($color-accent, 1);
+      stroke-width: 5px;
+    }
+    &_countries {
+      fill: none;
+      stroke: rgba($color-accent, 0.15);
+      stroke-width: 2px;
+    }
+    &_active {
+      fill: none;
+      stroke: rgba($color-accent-4, 1);
+      stroke-width: 4px;
+    }
+  }
+
   .xAxis,
   .yAxis {
     .domain {
@@ -40,7 +52,7 @@
     }
     .tick {
       line {
-        stroke: rgba($color-accent, 0.25);
+        stroke: rgba($color-accent, 0.05);
       }
 
       text {

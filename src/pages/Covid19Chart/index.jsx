@@ -1,5 +1,7 @@
 /* eslint-disable no-shadow */
-import React, { useMemo, useEffect } from 'react'
+import React, {
+  useMemo, useEffect, useCallback, useState,
+} from 'react'
 import useCsv from 'hooks/useCsv'
 import {
   select,
@@ -13,6 +15,7 @@ import {
   extent,
   line,
   max,
+  Delaunay,
 } from 'd3'
 
 import s from './Covid19Chart.m.scss'
@@ -49,9 +52,7 @@ const Covid19Chart = () => {
     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
   )
 
-  console.log({ data })
-
-  const { totalDeathsData, deathsDataByCountries } = useMemo(() => {
+  const { totalDeathsData, totalData, deathsDataByCountries } = useMemo(() => {
     const days = data.columns.slice(4)
 
     const deathsDataByCountries = data
@@ -59,10 +60,17 @@ const Covid19Chart = () => {
       .map(d => ({
         name: d['Country/Region'],
         data: days.map(day => ({
+          name: d['Country/Region'],
           date: parseDate(day),
           deaths: +d[day],
         })),
       }))
+
+    const totalData = deathsDataByCountries
+      .map(d => d.data)
+      .reduce((acc, current) => acc.concat(current), [])
+
+    console.log({ totalData })
 
     const totalDeathsData = days.map(day => ({
       date: parseDate(day),
@@ -71,11 +79,10 @@ const Covid19Chart = () => {
 
     return {
       totalDeathsData,
+      totalData,
       deathsDataByCountries,
     }
   }, [data])
-
-  console.log({ totalDeathsData })
 
   const svgSize = useMemo(() => {
     const svgRect = document.querySelector('[data-svg]')?.getBoundingClientRect()
@@ -86,42 +93,59 @@ const Covid19Chart = () => {
     }
   }, [data])
 
-  // https://observablehq.com/@d3/margin-convention
-  const innerWidth = svgSize.width - c.margin.left - c.margin.right
-  const innerHeight = svgSize.height - c.margin.top - c.margin.bottom
+  const { innerHeight, innerWidth } = useMemo(
+    () => console.log('memo Height') || {
+      // https://observablehq.com/@d3/margin-convention
+      innerWidth: svgSize.width - c.margin.left - c.margin.right,
+      innerHeight: svgSize.height - c.margin.top - c.margin.bottom,
+    },
+    [svgSize],
+  )
 
-  const xScale = scaleTime().domain(extent(totalDeathsData, getXValue)).range([0, innerWidth])
+  const xScale = useMemo(
+    () => scaleTime().domain(extent(totalDeathsData, getXValue)).range([0, innerWidth]),
+    [totalDeathsData, innerWidth],
+  )
 
   // The trick with Log scale is that you can't start with zero in the domain
-  const yScale = scaleLog()
-    .domain([1, max(totalDeathsData, getYValue)])
-    .range([innerHeight, 0])
+  const yScale = useMemo(
+    () => scaleLog()
+      .domain([1, max(totalDeathsData, getYValue)])
+      .range([innerHeight, 0]),
+    [totalDeathsData, innerHeight],
+  )
 
-  const lineGenerator = line()
-    .x(d => xScale(getXValue(d)))
-    .y(d => yScale(getYValue(d)))
+  const lineGenerator = useMemo(
+    () => line()
+      .x(d => xScale(getXValue(d)))
+      .y(d => yScale(getYValue(d))),
+    [xScale, yScale],
+  )
 
-  const renderYMarker = () => {
-    const qty = 100000 * 30
-    const yPos = yScale(qty)
+  const renderYMarker = useMemo(
+    () => () => {
+      const qty = 100000 * 30
+      const yPos = yScale(qty)
 
-    return (
-      <g data-y-marker className={s.marker}>
-        <text
-          className={s.marker_text}
-          textAnchor='end'
-          alignmentBaseline='central'
-          y={yPos}
-          dx={c.marker.left.dx}
-        >
-          {formatNumber(qty)}
-        </text>
-        <line className={s.marker_line} x2={innerWidth} y1={yPos} y2={yPos} />
-      </g>
-    )
-  }
+      return (
+        <g data-y-marker className={s.marker}>
+          <text
+            className={s.marker_text}
+            textAnchor='end'
+            alignmentBaseline='central'
+            y={yPos}
+            dx={c.marker.left.dx}
+          >
+            {formatNumber(qty)}
+          </text>
+          <line className={s.marker_line} x2={innerWidth} y1={yPos} y2={yPos} />
+        </g>
+      )
+    },
+    [xScale, yScale, innerWidth, totalDeathsData, innerHeight],
+  )
 
-  const renderXMarker = () => {
+  const renderXMarker = useCallback(() => {
     const xValue = getXValue(totalDeathsData.slice(-1)[0])
     const xPos = xScale(xValue)
 
@@ -140,7 +164,7 @@ const Covid19Chart = () => {
         <line className={s.marker_line} y2={innerHeight} x1={xPos} x2={xPos} />
       </g>
     )
-  }
+  }, [totalDeathsData, innerHeight])
 
   useEffect(() => {
     if (totalDeathsData.length === 0) return
@@ -176,6 +200,43 @@ const Covid19Chart = () => {
   }, [totalDeathsData])
 
   const renderYAxis = () => <g data-y-axis className={s.yAxis} />
+
+  const [activeCountryName, setActiveCountryName] = useState('')
+
+  console.log({ activeCountryName })
+
+  const handleVoronoiHover = useCallback(
+    d => {
+      if (activeCountryName === d.name) return
+
+      setActiveCountryName(d.name)
+      // console.log('Hovered', d)
+    },
+    [setActiveCountryName],
+  )
+
+  console.log('plain')
+
+  const renderVoronoiOverlay = () => {
+    // console.log('memo')
+    const points = totalData.map(d => [xScale(getXValue(d)), yScale(getYValue(d))])
+    const delaunay = Delaunay.from(points)
+    const voronoi = delaunay.voronoi([0, 0, innerWidth, innerHeight])
+
+    return (
+      <g data-voronoi-overlay>
+        {points.map((_, i) => (
+          <path
+            key={i}
+            fill='none'
+            stroke='hotpink'
+            d={voronoi.renderCell(i)}
+            onMouseEnter={() => handleVoronoiHover(totalData[i])}
+          />
+        ))}
+      </g>
+    )
+  }
 
   return (
     <div
@@ -222,57 +283,86 @@ const Covid19Chart = () => {
         <h2>Covid-19 Chart</h2>
 
         <svg data-svg width='100%' height='100%'>
-          {totalDeathsData.length > 0 ? (
-            <g transform={`translate(${c.margin.left},${c.margin.top})`}>
-              {deathsDataByCountries.slice(0, 10).map((country, i) => (
+          <g transform={`translate(${c.margin.left},${c.margin.top})`}>
+            <g data-line-countries className={s.line_countries}>
+              {useMemo(
+                () => (deathsDataByCountries.length > 0
+                  ? deathsDataByCountries.map((country, i) => (
+                    <path
+                      key={i}
+                      style={{
+                        fill: 'none',
+                      }}
+                      d={lineGenerator(country.data)}
+                    />
+                  ))
+                  : null),
+                [deathsDataByCountries, lineGenerator],
+              )}
+            </g>
+
+            {useMemo(
+              () => (activeCountryName ? (
                 <path
-                  key={i}
-                  className={s.line}
+                  className={s.line_active}
                   style={{
                     fill: 'none',
-                    stroke: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${
-                      Math.random() * 255
-                    })`,
                   }}
-                  d={lineGenerator(country.data)}
+                  d={lineGenerator(
+                    deathsDataByCountries.find(d => d.name === activeCountryName).data,
+                  )}
                 />
-              ))}
-              <path
-                className={s.line}
-                style={{
-                  fill: 'none',
-                }}
-                d={lineGenerator(totalDeathsData)}
-              />
+              ) : null),
+              [deathsDataByCountries, lineGenerator, activeCountryName],
+            )}
 
-              {renderXAxis()}
-              {renderYAxis()}
+            {useMemo(
+              () => (
+                <g data-line-total className={s.line_total}>
+                  <path
+                    style={{
+                      fill: 'none',
+                    }}
+                    d={lineGenerator(totalDeathsData)}
+                  />
+                </g>
+              ),
+              [lineGenerator, totalDeathsData],
+            )}
 
-              {renderYMarker()}
-              {renderXMarker()}
+            {totalDeathsData.length > 0 ? (
+              <>
+                {renderXAxis()}
+                {renderYAxis()}
 
-              <g data-labels className={s.labels}>
-                <text className={s.title} dy={c.label.top.dy}>
-                  World Coronavirus Deaths Over Time by Country
-                </text>
-                <text
-                  transform={`translate(0,${innerHeight / 2}) rotate(-90)`}
-                  textAnchor='middle'
-                  dy={c.label.left.dy}
-                >
-                  Cumulative Deaths
-                </text>
-                <text
-                  transform={`translate(${innerWidth / 2},${innerHeight})`}
-                  textAnchor='middle'
-                  alignmentBaseline='hanging'
-                  dy={c.label.bottom.dy}
-                >
-                  Time
-                </text>
-              </g>
-            </g>
-          ) : null}
+                {renderYMarker()}
+                {renderXMarker()}
+
+                <g data-labels className={s.labels}>
+                  <text className={s.title} dy={c.label.top.dy}>
+                    World Coronavirus Deaths Over Time by Country
+                  </text>
+                  <text
+                    transform={`translate(0,${innerHeight / 2}) rotate(-90)`}
+                    textAnchor='middle'
+                    dy={c.label.left.dy}
+                  >
+                    Cumulative Deaths
+                  </text>
+                  <text
+                    transform={`translate(${innerWidth / 2},${innerHeight})`}
+                    textAnchor='middle'
+                    alignmentBaseline='hanging'
+                    dy={c.label.bottom.dy}
+                  >
+                    Time
+                  </text>
+                </g>
+              </>
+            ) : null}
+
+            {useMemo(() => (totalData.length > 0 ? renderVoronoiOverlay() : null), [totalData])}
+          </g>
         </svg>
       </div>
     </div>
