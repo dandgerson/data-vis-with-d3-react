@@ -40,7 +40,7 @@
     }
     &_active {
       fill: none;
-      stroke: rgba($color-accent-4, 1);
+      stroke: rgba($color-accent-3, 1);
       stroke-width: 4px;
     }
   }
@@ -58,6 +58,35 @@
       text {
         fill: rgba($color-accent, 0.5);
         font-size: 14px;
+      }
+    }
+  }
+
+  .tooltip {
+    &_circle {
+      fill: rgba($color-accent-4, 0.75);
+    }
+    &_stroke {
+      font-size: 16px;
+      stroke: rgba(white, 0.1);
+      stroke-width: 6px;
+    }
+    &_text {
+      fill: rgba($color-accent-4, 1);
+      font-size: 16px;
+    }
+  }
+
+  .voronoi {
+    path {
+      fill: none;
+      stroke: none;
+      pointer-events: all;
+    }
+
+    &-shown {
+      path {
+        stroke: rgba($color-accent-2, 1);
       }
     }
   }

@@ -21,6 +21,7 @@ import {
 import s from './Covid19Chart.m.scss'
 
 const formatNumber = num => format('.2s')(num)
+const formatComma = num => format(',')(num)
 const parseDate = timeParse('%m/%d/%Y')
 const parseTime = timeFormat('%e %b %y')
 const getXValue = d => d.date
@@ -54,7 +55,6 @@ const Covid19Chart = () => {
 
   const { totalDeathsData, totalData, deathsDataByCountries } = useMemo(() => {
     const days = data.columns.slice(4)
-
     const deathsDataByCountries = data
       .filter(d => d['Province/State'] === '')
       .map(d => ({
@@ -69,8 +69,7 @@ const Covid19Chart = () => {
     const totalData = deathsDataByCountries
       .map(d => d.data)
       .reduce((acc, current) => acc.concat(current), [])
-
-    console.log({ totalData })
+      .filter((_, i) => i % 10 === 0)
 
     const totalDeathsData = days.map(day => ({
       date: parseDate(day),
@@ -201,43 +200,49 @@ const Covid19Chart = () => {
 
   const renderYAxis = () => <g data-y-axis className={s.yAxis} />
 
-  const [activeCountryName, setActiveCountryName] = useState('')
-
-  // console.log({ activeCountryName })
+  const [activeRow, setActiveRow] = useState(null)
 
   const handleVoronoiHover = useCallback(
     d => {
-      if (activeCountryName === d.name) return
-
-      setActiveCountryName(d.name)
-      // console.log('Hovered', d)
+      console.log('Hovered', d)
+      setActiveRow(d)
     },
-    [setActiveCountryName],
+    [setActiveRow],
   )
 
   // console.log('plain')
 
-  const renderVoronoiOverlay = () => {
-    // console.log('memo')
-    const points = totalData.map(d => [xScale(getXValue(d)), yScale(getYValue(d))])
-    const delaunay = Delaunay.from(points)
-    const voronoi = delaunay.voronoi([0, 0, innerWidth, innerHeight])
+  const renderVoronoiOverlay = useMemo(
+    () => () => {
+      const points = totalData.map(d => [xScale(getXValue(d)), yScale(getYValue(d))])
+      const delaunay = Delaunay.from(points)
+      const voronoi = delaunay.voronoi([0, 0, innerWidth + 100, innerHeight])
 
-    return (
-      <g data-voronoi-overlay>
-        {console.log('memo voronoi')
-          || points.map((_, i) => (
+      return (
+        <g className={s.voronoi} data-voronoi-overlay>
+          {points.map((_, i) => (
             <path
               key={i}
-              fill='none'
-              stroke='hotpink'
               d={voronoi.renderCell(i)}
               onMouseEnter={() => handleVoronoiHover(totalData[i])}
             />
           ))}
-      </g>
-    )
-  }
+        </g>
+      )
+    },
+    [totalData, innerHeight, innerWidth],
+  )
+
+  const renderTooltip = useCallback(
+    ({ className, activeRow }) => (
+      <text className={className} dy={-18} textAnchor='end'>
+        {`${activeRow.name}. Deaths: ${formatComma(activeRow.deaths)}. Date: ${parseTime(
+          activeRow.date,
+        )}`}
+      </text>
+    ),
+    [],
+  )
 
   return (
     <div
@@ -303,18 +308,37 @@ const Covid19Chart = () => {
             </g>
 
             {useMemo(
-              () => (activeCountryName ? (
-                <path
-                  className={s.line_active}
-                  style={{
-                    fill: 'none',
-                  }}
-                  d={lineGenerator(
-                    deathsDataByCountries.find(d => d.name === activeCountryName).data,
-                  )}
-                />
+              () => (activeRow ? (
+                <g data-line-active>
+                  <path
+                    className={s.line_active}
+                    style={{
+                      fill: 'none',
+                    }}
+                    d={lineGenerator(
+                      deathsDataByCountries.find(d => d.name === activeRow.name).data,
+                    )}
+                  />
+                  <g
+                    className={s.tooltip}
+                    transform={`translate(${xScale(getXValue(activeRow))},${yScale(
+                      getYValue(activeRow),
+                    )})`}
+                  >
+                    <circle className={s.tooltip_circle} r={8} />
+
+                    {renderTooltip({
+                      className: s.tooltip_stroke,
+                      activeRow,
+                    })}
+                    {renderTooltip({
+                      className: s.tooltip_text,
+                      activeRow,
+                    })}
+                  </g>
+                </g>
               ) : null),
-              [deathsDataByCountries, lineGenerator, activeCountryName],
+              [deathsDataByCountries, lineGenerator, activeRow],
             )}
 
             {useMemo(
