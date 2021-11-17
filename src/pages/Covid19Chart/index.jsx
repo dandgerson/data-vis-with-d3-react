@@ -21,6 +21,7 @@ import {
 import s from './Covid19Chart.m.scss'
 
 const formatNumber = num => format('.2s')(num)
+const formatComma = num => format(',')(num)
 const parseDate = timeParse('%m/%d/%Y')
 const parseTime = timeFormat('%e %b %y')
 const getXValue = d => d.date
@@ -215,7 +216,7 @@ const Covid19Chart = () => {
     () => () => {
       const points = totalData.map(d => [xScale(getXValue(d)), yScale(getYValue(d))])
       const delaunay = Delaunay.from(points)
-      const voronoi = delaunay.voronoi([0, 0, innerWidth, innerHeight])
+      const voronoi = delaunay.voronoi([0, 0, innerWidth + 100, innerHeight])
 
       return (
         <g className={s.voronoi} data-voronoi-overlay>
@@ -230,6 +231,17 @@ const Covid19Chart = () => {
       )
     },
     [totalData, innerHeight, innerWidth],
+  )
+
+  const renderTooltip = useCallback(
+    ({ className, activeRow }) => (
+      <text className={className} dy={-18} textAnchor='end'>
+        {`${activeRow.name}. Deaths: ${formatComma(activeRow.deaths)}. Date: ${parseTime(
+          activeRow.date,
+        )}`}
+      </text>
+    ),
+    [],
   )
 
   return (
@@ -307,21 +319,23 @@ const Covid19Chart = () => {
                       deathsDataByCountries.find(d => d.name === activeRow.name).data,
                     )}
                   />
-
-                  <circle
-                    cx={xScale(getXValue(activeRow))}
-                    cy={yScale(getYValue(activeRow))}
-                    r={8}
-                  />
-                  <text
-                    x={xScale(getXValue(activeRow))}
-                    y={yScale(getYValue(activeRow))}
-                    textAnchor='middle'
-                    alignmentBaseline='before-edge'
-                    fill='deeppink'
+                  <g
+                    className={s.tooltip}
+                    transform={`translate(${xScale(getXValue(activeRow))},${yScale(
+                      getYValue(activeRow),
+                    )})`}
                   >
-                    Goo
-                  </text>
+                    <circle className={s.tooltip_circle} r={8} />
+
+                    {renderTooltip({
+                      className: s.tooltip_stroke,
+                      activeRow,
+                    })}
+                    {renderTooltip({
+                      className: s.tooltip_text,
+                      activeRow,
+                    })}
+                  </g>
                 </g>
               ) : null),
               [deathsDataByCountries, lineGenerator, activeRow],

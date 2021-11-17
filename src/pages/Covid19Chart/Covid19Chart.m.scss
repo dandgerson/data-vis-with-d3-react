@@ -62,6 +62,21 @@
     }
   }
 
+  .tooltip {
+    &_circle {
+      fill: rgba($color-accent-4, 0.75);
+    }
+    &_stroke {
+      font-size: 16px;
+      stroke: rgba(white, 0.1);
+      stroke-width: 6px;
+    }
+    &_text {
+      fill: rgba($color-accent-4, 1);
+      font-size: 16px;
+    }
+  }
+
   .voronoi {
     path {
       fill: none;

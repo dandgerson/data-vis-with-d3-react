@@ -4,7 +4,6 @@ import cl from 'clsx'
 
 import routes from 'routes'
 import Header from './Header'
-import Footer from './Footer'
 
 import s from './App.m.scss'
 
@@ -21,10 +20,6 @@ const App = () => (
             <Route key={route.id} path={route.path} element={route.render()} />
           ))}
         </Routes>
-      </div>
-
-      <div className={s.footer}>
-        <Footer />
       </div>
     </div>
   </HashRouter>
